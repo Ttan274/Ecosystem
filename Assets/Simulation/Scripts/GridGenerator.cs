@@ -6,103 +6,91 @@ public class GridGenerator : MonoBehaviour
     [Header("Grid Settings")]
     [SerializeField] private int width;
     [SerializeField] private int height;
-    [SerializeField] private int lakeCount;
-    [SerializeField] private int lakeSize;
 
     [Header("Tile Prefab & Materials")]
     [SerializeField] private GameObject tilePrefab;
-    [SerializeField] private Material[] materials;
+    [SerializeField] private Material material;
 
     private Tile[,] grid;
+    private TileType[,] currentMap;
+    private float[,] perlinMap;
 
-    private void Start()
+    public static GridGenerator instance;
+
+    private void Awake()
     {
-        GenerateGrid();
+        instance = this;
+    }
+
+    public void MapSetup(int w, int h)
+    {
+        width = w; 
+        height = h;
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.M))
-            GenerateGrid();
+        /*
+        if (Input.GetKeyDown(KeyCode.S))
+            SaveManager.Instance.SaveMap(currentMap, perlinMap, width, height);
+
+        if (Input.GetKeyDown(KeyCode.L))
+            if (SaveManager.Instance.LoadMap() != (null, null))
+                GenerateFromLoadedMap(SaveManager.Instance.LoadMap().Item1, SaveManager.Instance.LoadMap().Item2);
+    */
     }
 
-    private void GenerateGrid()
+    private void GenerateFromLoadedMap(TileType[,] tileTypes, float[,] perlin)
     {
         // Clear existing tiles
         foreach (Transform child in transform)
             Destroy(child.gameObject);
 
         grid = new Tile[width, height];
-        TileType[,] typeMap = new TileType[width, height];
-
-        GenerateLakes(typeMap);
-        AssignRemainingTiles(typeMap);
-        InstantiateTiles(typeMap);
+        currentMap = tileTypes;
+        perlinMap = perlin;
+        
+        InstantiateTiles(tileTypes);
     }
 
-    private void GenerateLakes(TileType[,] typeMap)
+    public void GenerateGrid()
     {
-        for (int i = 0; i < lakeCount; i++)
-        {
-            Vector2Int center = new Vector2Int(
-                Random.Range(2, width - 2),
-                Random.Range(2, height - 2)
-            );
-            FillLake(typeMap, center, lakeSize);
-        }
+        // Clear existing tiles
+        foreach (Transform child in transform)
+            Destroy(child.gameObject);
+
+        grid = new Tile[width, height];
+        currentMap = new TileType[width, height];
+        perlinMap = new float[width, height];
+
+        GenerateWithPerlin(currentMap);
+        AddMuddyEdges(currentMap);
+        InstantiateTiles(currentMap);
     }
 
-    private void FillLake(TileType[,] typeMap, Vector2Int center, int maxTiles)
+    private void GenerateWithPerlin(TileType[,] typeMap)
     {
-        Queue<Vector2Int> queue = new Queue<Vector2Int>();
-        HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
-
-        queue.Enqueue(center);
-        visited.Add(center);
-        typeMap[center.x, center.y] = TileType.Water;
-
-        int filled = 1;
-        Vector2Int[] directions = {
-            Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right
-        };
-
-        while (queue.Count > 0 && filled < maxTiles)
-        {
-            Vector2Int current = queue.Dequeue();
-
-            foreach (var dir in directions)
-            {
-                Vector2Int next = current + dir;
-                if (IsInBounds(next) && !visited.Contains(next) && typeMap[next.x, next.y] == TileType.None)
-                {
-                    typeMap[next.x, next.y] = TileType.Water;
-                    queue.Enqueue(next);
-                    visited.Add(next);
-                    if (++filled >= maxTiles) break;
-                }
-            }
-        }
-    }
-
-    private void AssignRemainingTiles(TileType[,] typeMap)
-    {
-        List<Vector2Int> unassigned = new();
+        float scale = 0.1f; // smaller = larger features
+        float offsetX = Random.Range(0f, 1000f);
+        float offsetY = Random.Range(0f, 1000f);
 
         for (int x = 0; x < width; x++)
-            for (int y = 0; y < height; y++)
-                if (typeMap[x, y] == TileType.None)
-                    unassigned.Add(new Vector2Int(x, y));
-
-        Shuffle(unassigned);
-
-        int totalTiles = width * height;
-        int waterCount = CountTilesOfType(typeMap, TileType.Water);
-        int walkableCount = (int)((totalTiles - waterCount) * 0.95f);
-
-        for (int i = 0; i < unassigned.Count; i++)
         {
-            Vector2Int pos = unassigned[i];
-            typeMap[pos.x, pos.y] = i < walkableCount ? TileType.Walkable : TileType.Blocked;
+            for (int y = 0; y < height; y++)
+            {
+                float xCoord = offsetX + x * scale;
+                float yCoord = offsetY + y * scale;
+                float value = Mathf.PerlinNoise(xCoord, yCoord);
+
+                if (value < 0.25f)
+                    typeMap[x, y] = TileType.Water;
+                else if (value < 0.72f)
+                    typeMap[x, y] = TileType.Walkable;
+                else
+                    typeMap[x, y] = TileType.Blocked;
+
+                perlinMap[x, y] = value;
+            }
         }
     }
 
@@ -116,23 +104,65 @@ public class GridGenerator : MonoBehaviour
                 GameObject tileObj = Instantiate(tilePrefab, position, Quaternion.identity, transform);
                 Tile tile = tileObj.GetComponent<Tile>();
 
-                TileType type = typeMap[x, y];
-                tile.Initialize(new Vector2Int(x, y), type, GetMaterial(type));
 
+                tile.Initialize(new Vector2Int(x, y), typeMap[x, y], material, GetColorShade(typeMap[x, y], perlinMap[x, y]));
                 grid[x, y] = tile;
             }
         }
     }
 
-    private Material GetMaterial(TileType type)
+    private void AddMuddyEdges(TileType[,] typeMap)
     {
-        return type switch
+        Vector2Int[] directions = {
+        Vector2Int.up, Vector2Int.down,
+        Vector2Int.left, Vector2Int.right
+    };
+
+        for (int x = 0; x < width; x++)
         {
-            TileType.Walkable => materials[0],
-            TileType.Water => materials[1],
-            TileType.Blocked => materials[2],
-            _ => materials[0],
-        };
+            for (int y = 0; y < height; y++)
+            {
+                if (typeMap[x, y] != TileType.Walkable)
+                    continue;
+
+                foreach (var dir in directions)
+                {
+                    Vector2Int neighbor = new Vector2Int(x, y) + dir;
+                    if (IsInBounds(neighbor) && typeMap[neighbor.x, neighbor.y] == TileType.Water)
+                    {
+                        typeMap[x, y] = TileType.Mud;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    private Color GetColorShade(TileType type, float p)
+    {
+        float intensity = 1f;
+
+        switch (type)
+        {
+            case TileType.Water:
+                intensity = Mathf.Lerp(0.3f, 0.6f, p / 0.25f); // deeper = darker
+                return new Color(0.2f, 0.4f, 1f) * intensity;
+
+            case TileType.Walkable:
+                intensity = Mathf.Lerp(0.6f, 1.0f, (p - 0.25f) / 0.55f);
+                return new Color(0.5f, 1f, 0.5f) * intensity;
+
+            case TileType.Blocked:
+                intensity = Mathf.Lerp(0.4f, 0.7f, (p - 0.8f) / 0.2f);
+                return new Color(0.4f, 0.4f, 0.4f) * intensity;
+
+            case TileType.Mud:
+                float mudIntensity = Mathf.Lerp(0.5f, 0.7f, p);
+                return new Color(0.5f, 0.35f, 0.2f) * mudIntensity;
+
+            default:
+                return Color.white;
+        }
     }
 
     private bool IsInBounds(Vector2Int pos)
@@ -140,15 +170,7 @@ public class GridGenerator : MonoBehaviour
         return pos.x >= 0 && pos.x < width && pos.y >= 0 && pos.y < height;
     }
 
-    private void Shuffle(List<Vector2Int> list)
-    {
-        for (int i = 0; i < list.Count; i++)
-        {
-            int rand = Random.Range(i, list.Count);
-            (list[i], list[rand]) = (list[rand], list[i]);
-        }
-    }
-
+    //debugging methods
     private int CountTilesOfType(TileType[,] typeMap, TileType type)
     {
         int count = 0;

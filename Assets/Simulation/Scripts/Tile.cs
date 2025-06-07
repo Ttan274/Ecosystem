@@ -8,11 +8,18 @@ public class Tile : MonoBehaviour
     public Vector2Int gridPos;
     public TileType tileType;
 
-    public void Initialize(Vector2Int pos, TileType type, Material material)
+    public void Initialize(Vector2Int pos, TileType type, Material material, Color? tint = null)
     {
         gridPos = pos;
         tileType = type;
-        GetComponent<Renderer>().material = material;
+
+        Renderer renderer = GetComponent<Renderer>();
+        renderer.material = new Material(material);
+
+        if(tint.HasValue)
+            renderer.material.color = tint.Value;
+        
+        //Debugging
         gameObject.name = $"Tile_{gridPos.x}_{gridPos.y}";
     }
 
@@ -34,5 +41,5 @@ public enum TileType
     Walkable,
     Water,
     Blocked,
-    //...
+    Mud
 }
