@@ -1,2 +1,8 @@
 # Ecosystem
-Ecosystem project with unity 3d
+This 3D ecosystem simulation project is built upon a procedurally generated, tile-based grid map that serves as the dynamic environment for various living entities. These entities are categorized into two main groups: plants and animals.
+
+*Plants serve dual purposes within the ecosystem. Some act as barriers, which block animal movement and influence pathfinding, while others function as food sources for herbivorous animals.
+
+*Animals are further divided into two types based on their behavior and diet:
+    --->Herbivores, which actively search for and consume edible plants to survive.
+    --->Carnivores, which hunt and feed on herbivores, forming a natural food chain and driving the predator-prey dynamics within the system.
