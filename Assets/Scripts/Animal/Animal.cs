@@ -5,6 +5,12 @@ public class Animal : MonoBehaviour
 {
     [Header("Identity")]
     public Gender gender {get; private set;}
+    public string animalName { get; private set;}
+    public void SetAnimalName(string anName)
+    {
+        animalName = anName;
+        gameObject.name = animalName;
+    }
 
     [Header("Movement")]
     [SerializeField] protected AnimalState state = AnimalState.Idle;

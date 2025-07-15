@@ -14,6 +14,7 @@ public class Simulation : MonoBehaviour
     private bool carnivoresCreated = false;
 
     //References
+    [SerializeField]private List<string> animalNames = new List<string>() { "John", "Lucia", "Maxvel", "Naber", "Hello", "Wikwik", "Susangus", "Naber" };
     private List<Tile> tiles = new List<Tile>();
     public static Simulation Instance;
 
@@ -58,7 +59,16 @@ public class Simulation : MonoBehaviour
             tiles.Remove(place);
             Vector3 spawnPos = place.transform.position + new Vector3(0, 0.5f, 0);
             Animal g = Instantiate(prefab, spawnPos, Quaternion.identity).GetComponent<Animal>();
+            g.SetAnimalName(GetNameForAnimal());
             animals.Add(g);
         }
+    }
+
+    private string GetNameForAnimal()
+    {
+        int rand = Random.Range(0, animalNames.Count);
+        string n = animalNames[rand];
+        animalNames.Remove(n);
+        return n;
     }
 }
