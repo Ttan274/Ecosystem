@@ -28,6 +28,7 @@ public class CameraController : MonoBehaviour
     private Vector3 lastMousePos = new Vector3(255, 255, 255);
     private float totalMultiplied = 1f;
     private Transform focusPoint;
+    private bool camActive = false;
 
     public void StartFollowing(Transform t)
     {
@@ -37,20 +38,30 @@ public class CameraController : MonoBehaviour
 
     public void SetFocusPoint(Transform t)
     {
+        if (terrain == null)
+        {
+            terrain = t;
+            camActive = true;
+        }
+
         focusPoint = t;
     }
 
     private void Update()
     {
+        if (!camActive) return;
+
         if(Input.GetKeyUp(switchKey))
         {
             switch (mode)
             {
                 case CameraMode.Orbit:
                     mode = CameraMode.Fly;
+                    CursorBehaviour(false);
                     break;
                 case CameraMode.Fly:
                     mode = CameraMode.Orbit;
+                    CursorBehaviour(true);
                     break;
                 default:
                     Debug.LogWarning("Mode is not defined");
@@ -121,7 +132,8 @@ public class CameraController : MonoBehaviour
 
     private void UpdateOrbitBehaviour()
     {
-        focusPoint = terrain;
+        if(terrain != null)
+            focusPoint = terrain;
         transform.LookAt(focusPoint.position);
         transform.RotateAround(focusPoint.position, rotAxis, rotSpeed * Time.unscaledDeltaTime);
     }
@@ -146,5 +158,10 @@ public class CameraController : MonoBehaviour
             vel += new Vector3(1, 0, 0);
         }
         return vel;
+    }
+
+    private void CursorBehaviour(bool status)
+    {
+        Cursor.visible = status;
     }
 }
