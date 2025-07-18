@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class Herbivore : Animal
 {
-   [SerializeField] private Herbivore mate;
-
+    [SerializeField] private Herbivore mate;
+    public bool IsHaveMate => mate != null;
     protected override void Start()
     {
         base.Start();
@@ -41,7 +41,7 @@ public class Herbivore : Animal
 
     protected override void FindFood()
     {
-        Plant[] allPlants = FindObjectsOfType<Plant>();
+        Plant[] allPlants = FindObjectsByType<Plant>(FindObjectsSortMode.None);
         float closestDist = Mathf.Infinity;
         Plant closest = null;
 
@@ -65,18 +65,4 @@ public class Herbivore : Animal
     }
 
     public void GotEaten() => Destroy(gameObject);
-
-    protected override void SeekMate()
-    {
-        if (canMate)
-        {
-            MateManager.Instance.Register(this);
-            if(gender == Gender.Male)
-                mate = MateManager.Instance.SeekMate(this);
-        }
-        else
-        {
-            MateManager.Instance.Unregister(this);
-        }
-    }
 }

@@ -45,7 +45,7 @@ public class Carnivore : Animal
 
     protected override void FindFood()
     {
-        Herbivore[] herbivores = FindObjectsOfType<Herbivore>();
+        Herbivore[] herbivores = FindObjectsByType<Herbivore>(FindObjectsSortMode.None);
         float closestDist = Mathf.Infinity;
         Herbivore closest = null;
 

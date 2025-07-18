@@ -9,7 +9,9 @@ public class Simulation : MonoBehaviour
     [SerializeField] private GameObject carnivore;
     [SerializeField] private int initialCarnivoreCount;
 
-    public List<Animal> animals = new List<Animal>();
+    private List<Animal> animals = new List<Animal>();
+    public List<Animal> Animals => animals;
+    public int animalsCount => animals.Count;
     private bool herbivoresCreated = false;
     private bool carnivoresCreated = false;
 

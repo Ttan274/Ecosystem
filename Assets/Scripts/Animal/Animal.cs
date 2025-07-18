@@ -6,6 +6,7 @@ public class Animal : MonoBehaviour
     [Header("Identity")]
     public Gender gender {get; private set;}
     public string animalName { get; private set;}
+    public string status => state.ToString();
     public void SetAnimalName(string anName)
     {
         animalName = anName;
@@ -38,11 +39,7 @@ public class Animal : MonoBehaviour
     private float currentThirst;
     private bool canSearchWater = true;
     private float searchWaterTimer = 0;
-
-    [Header("Mate")]
-    [SerializeField] private float waitForMate;
-    private float mateTimer = 0;
-    protected bool canMate => currentHunger >= 80f && currentThirst >= 80f && mateTimer >= waitForMate;
+    protected bool canMate => currentHunger >= 80f && currentThirst >= 80f;
     
     //UI
     private AnimalUI animUI;
@@ -64,7 +61,6 @@ public class Animal : MonoBehaviour
     {
         UpdateNeeds();
         UpdateNeeds2();
-        SeekMate();
         
         switch (state)
         {
@@ -226,8 +222,6 @@ public class Animal : MonoBehaviour
         state = AnimalState.Wander;
         canSearchFood = false;
     }
-
-    protected virtual void SeekMate() { }
 
     //debugging
     protected void OnDrawGizmos()
