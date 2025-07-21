@@ -65,11 +65,13 @@ public class Herbivore : Animal
 
         foreach (Herbivore other in herbivores)
         {
-            if (other == this || !other.IsReadyToMate || other.gender == this.gender) continue;
+            if (other == this || !other.IsReadyToMate || other.gender == this.gender || other.hasMate) continue;
 
             float distance = Vector3.Distance(transform.position, other.transform.position);
             if(distance <= matingDistance)
             {
+                hasMate = true;
+                other.hasMate = true;
                 Vector3 pos = (this.gender == Gender.Female) ? this.transform.position : other.transform.position;
                 Breed(other, pos);
                 break;

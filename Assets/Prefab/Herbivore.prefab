@@ -606,7 +606,7 @@ MonoBehaviour:
   drinkDistance: 0.6
   waitForThirst: 8
   matingCooldown: 10
-  matingThreshold: 0.9
+  matingThreshold: 0.7
   matingDistance: 3
 --- !u!1 &7472931758190481384
 GameObject:

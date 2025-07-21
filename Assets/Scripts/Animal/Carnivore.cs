@@ -5,7 +5,7 @@ public class Carnivore : Animal
     [Header("Carnivore Details")]
     [SerializeField] private float checkPrey;
     private float checkTimer = 0;
-
+    private bool canSearchPrey = true;
     protected override void Update()
     {
         base.Update();
@@ -15,7 +15,13 @@ public class Carnivore : Animal
 
     protected override void FoodSearch()
     {
-        if(food == null || checkTimer >= checkPrey)
+        if (!canSearchPrey)
+        {
+            //No food left for carnivores
+            return;
+        }
+
+        if (food == null || checkTimer >= checkPrey)
         {
             FindFood();
             checkTimer = 0;
@@ -41,6 +47,13 @@ public class Carnivore : Animal
     protected override void FindFood()
     {
         Herbivore[] herbivores = FindObjectsByType<Herbivore>(FindObjectsSortMode.None);
+
+        if (herbivores.Length <= 0)
+        {
+            canSearchPrey = false;
+            return;
+        }
+
         float closestDist = Mathf.Infinity;
         Herbivore closest = null;
 
@@ -61,5 +74,38 @@ public class Carnivore : Animal
     {
         food.GetComponent<Herbivore>().GotEaten();
         base.Eat();
+    }
+
+    protected override void FindMate()
+    {
+        Carnivore[] carnivores = FindObjectsByType<Carnivore>(FindObjectsSortMode.None);
+
+        foreach (Carnivore other in carnivores)
+        {
+            if (other == this || !other.IsReadyToMate || other.gender == this.gender || other.hasMate) continue;
+
+            float distance = Vector3.Distance(transform.position, other.transform.position);
+            if (distance <= matingDistance)
+            {
+                hasMate = true;
+                other.hasMate = true;
+                Vector3 pos = (this.gender == Gender.Female) ? this.transform.position : other.transform.position;
+                Breed(other, pos);
+                break;
+            }
+        }
+    }
+
+    private void Breed(Carnivore partner, Vector3 pos)
+    {
+        //Instantiate a child herbivore
+        Simulation.Instance.GenerateAnimal(Simulation.Instance.carnivore, pos);
+
+        //debugging
+        Debug.Log($"{this.name} and {partner.name} have bred!");
+
+        //resetting mating datas;
+        matingTimer = 0;
+        partner.matingTimer = 0;
     }
 }

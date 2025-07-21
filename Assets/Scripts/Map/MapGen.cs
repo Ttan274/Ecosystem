@@ -57,9 +57,9 @@ public class MapGen : MonoBehaviour
         CreatePlantables(tree);
         CreatePlantables(bush);
 
-        //Initalizing Pathfinder For Animals
+        //Initalizing Other Scripts
         Pathfinder.Instance.Initialize(tiles, width, height);
-        Simulation.Instance.Initalize(ShuffleGroundTiles());
+        Simulation.Instance.Initialize(ShuffleGroundTiles());
         Camera.main.GetComponent<CameraController>().SetFocusPoint(tiles[width / 2, height / 2].transform);
     }
 

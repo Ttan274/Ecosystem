@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Xml.Linq;
 using UnityEngine;
 
 public class Animal : MonoBehaviour
@@ -41,7 +40,8 @@ public class Animal : MonoBehaviour
     [SerializeField] private float matingThreshold;
     [SerializeField] protected float matingDistance;
     protected float matingTimer = 0;
-    protected bool IsReadyToMate => matingTimer >= matingCooldown
+    protected bool hasMate = false;
+    protected bool IsReadyToMate => !hasMate && matingTimer >= matingCooldown
                                     && currentHunger >= 100f * matingThreshold
                                     && currentThirst >= 100f * matingThreshold;
     //UI
@@ -58,7 +58,7 @@ public class Animal : MonoBehaviour
 
         animalName = aName;
         gameObject.name = animalName;
-        gender = g; // (Random.value < 0.5f) ? Gender.Male : Gender.Female;
+        gender = g;
         animUI.SetGenderBar(gender);
     }
 
@@ -77,9 +77,6 @@ public class Animal : MonoBehaviour
                 break;
             case AnimalState.SeekWater:
                 WaterSearch();
-                break;
-            case AnimalState.Mate:
-
                 break;
         }
     }
@@ -232,6 +229,9 @@ public class Animal : MonoBehaviour
     {
         if (currentPath == null || currentPath.Count == 0) return;
 
+        Gizmos.color = Color.black;
+        Gizmos.DrawWireSphere(transform.position, matingDistance);
+
         Gizmos.color = gizmoColor;
         for (int i = 0; i < currentPath.Count - 1; i++)
         {
@@ -247,8 +247,7 @@ public enum AnimalState
     Idle,
     Wander,
     SeekFood,
-    SeekWater,
-    Mate
+    SeekWater
 }
 
 public enum Gender

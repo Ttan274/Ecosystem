@@ -20,7 +20,7 @@ public class Simulation : MonoBehaviour
     private List<Tile> tiles = new List<Tile>();
     public static Simulation Instance;
 
-    public void Initalize(List<Tile> tiles) => this.tiles = tiles;
+    public void Initialize(List<Tile> tiles) => this.tiles = tiles;
 
     private void Awake()
     {
@@ -39,21 +39,22 @@ public class Simulation : MonoBehaviour
         {
             if(!herbivoresCreated)
             {
-                GenerateAnimals(herbivore, initialHerbivoreCount);
+                GenerateInitialAnimals(herbivore, initialHerbivoreCount);
                 herbivoresCreated = true;
                 return;
             }
 
             if(herbivoresCreated && !carnivoresCreated)
             {
-                GenerateAnimals(carnivore, initialCarnivoreCount);
+                GenerateInitialAnimals(carnivore, initialCarnivoreCount);
                 carnivoresCreated = true;
                 return;
             }
         }
     }
 
-    private void GenerateAnimals(GameObject prefab, int count)
+    //Generation Methods
+    private void GenerateInitialAnimals(GameObject prefab, int count)
     {
         for (int i = 0; i < count; i++)
         {
@@ -67,22 +68,27 @@ public class Simulation : MonoBehaviour
     public void GenerateAnimal(GameObject animalPrefab, Vector3 spawnPos, Gender gen = Gender.Unknown)
     {
         Vector3 pos = spawnPos + new Vector3(0, 0.5f, 0);
-        Animal g = Instantiate(animalPrefab, pos, Quaternion.identity).GetComponent<Animal>();
-        
+        Animal g = Instantiate(animalPrefab, pos, Quaternion.identity, transform).GetComponent<Animal>();
+        g.Initialize(GetNameForAnimal(), GenGenderForAnimal(gen));
+        animals.Add(g);
+    }
+
+    //Utility Methods
+    private Gender GenGenderForAnimal(Gender gen)
+    {
         Gender gender;
         if (gen != Gender.Unknown)
             gender = gen;
         else
             gender = (Random.value < 0.5f) ? Gender.Male : Gender.Female;
 
-        g.Initialize(GetNameForAnimal(), gender);
-        animals.Add(g);
+        return gender;
     }
 
     private string GetNameForAnimal()
     {
         int rand = Random.Range(0, animalNames.Count);
-        string n = animalNames[rand];
+        string n = animalNames[rand] + "-" + Random.Range(0, 99);
         animalNames.Remove(n);
         return n;
     }
