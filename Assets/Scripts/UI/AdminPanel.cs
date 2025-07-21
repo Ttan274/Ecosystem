@@ -2,72 +2,53 @@ using UnityEngine;
 
 public class AdminPanel : MonoBehaviour
 {
-    [SerializeField] private GameObject animalBar;
-    private CanvasGroup canvasGroup;
-    private bool isOpen = false;
-    private GameObject[] bars;
-
-    public static AdminPanel Instance;
+    [SerializeField] private GameObject animalRow;
+    [SerializeField] private Transform animalTable;
+    private bool isActive = false;
+    private CanvasGroup canvas;
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        canvas = GetComponent<CanvasGroup>();
+    }
 
-        canvasGroup = GetComponent<CanvasGroup>();
-        GenerateBars();
+    public void ShowHerbivores()
+    {
+        Debug.Log("Showing herbivores");
+        ClearTable();
+        var list = Simulation.Instance.herbivores;
+        for (int i = 0; i < list.Count; i++)
+            CreateRow(i, list[i]);
+    }
+
+    public void ShowCarnivores()
+    {
+        ClearTable();
+        var list = Simulation.Instance.carnivores;
+        for (int i = 0; i < list.Count; i++)
+            CreateRow(i, list[i]);
+    }
+
+    private void ClearTable()
+    {
+        foreach (Transform child in animalTable)
+            Destroy(child.gameObject);
+    }
+
+    private void CreateRow(int index, Animal animal)
+    {
+        Debug.Log(animal.animalName);
+        GameObject row = Instantiate(animalRow, animalTable);
+        AnimalRowUI rowUI = row.GetComponent<AnimalRowUI>();
+        rowUI.SetData(index, animal);
     }
 
     private void Update()
     {
-        ChangeAdminPanelVisibility();
-        UpdateAdminPanel();
-    }
-
-    private void UpdateAdminPanel()
-    {
-        var animals = Simulation.Instance.Animals;
-        for (int i = 0; i < animals.Count; i++)
+        if(Input.GetKeyDown(KeyCode.M))
         {
-            AnimalAdminUI a = bars[i].GetComponent<AnimalAdminUI>();
-            a.SetUIBar(animals[i].animalName, animals[i].gender.ToString(), animals[i].status.ToString());
-        }
-    }
-
-    private void GenerateBars()
-    {
-        bars = new GameObject[12];
-        for (int i = 0; i < 12; i++)
-        {
-            GameObject g = Instantiate(animalBar, transform);
-            g.name = "AnimalBar" + i;
-            bars[i] = g;
-            bars[i].SetActive(false);
-        }
-    }
-
-    private void ChangeBarVisibility(bool x)
-    {
-        for (int i = 0; i < Simulation.Instance.animalsCount; i++)
-            bars[i].SetActive(x);
-    }
-    
-    private void ChangeAdminPanelVisibility()
-    {
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            if (!isOpen)
-            {
-                isOpen = true;
-                canvasGroup.alpha = 1;
-                ChangeBarVisibility(isOpen);
-            }
-            else
-            {
-                isOpen = false;
-                canvasGroup.alpha = 0;
-                ChangeBarVisibility(isOpen);
-            }
+            isActive = !isActive;
+            canvas.alpha = isActive ? 1 : 0;
         }
     }
 }

@@ -99,7 +99,7 @@ public class Carnivore : Animal
     private void Breed(Carnivore partner, Vector3 pos)
     {
         //Instantiate a child herbivore
-        Simulation.Instance.GenerateAnimal(Simulation.Instance.carnivore, pos);
+        Simulation.Instance.GenerateAnimal(Simulation.Instance.carnivore, pos, false);
 
         //debugging
         Debug.Log($"{this.name} and {partner.name} have bred!");

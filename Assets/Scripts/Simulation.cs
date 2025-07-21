@@ -9,9 +9,8 @@ public class Simulation : MonoBehaviour
     public GameObject carnivore;
     [SerializeField] private int initialCarnivoreCount;
 
-    private List<Animal> animals = new List<Animal>();
-    public List<Animal> Animals => animals;
-    public int animalsCount => animals.Count;
+    public List<Carnivore> carnivores = new List<Carnivore>();
+    public List<Herbivore> herbivores = new List<Herbivore>();
     private bool herbivoresCreated = false;
     private bool carnivoresCreated = false;
 
@@ -39,14 +38,14 @@ public class Simulation : MonoBehaviour
         {
             if(!herbivoresCreated)
             {
-                GenerateInitialAnimals(herbivore, initialHerbivoreCount);
+                GenerateInitialAnimals(herbivore, initialHerbivoreCount, true);
                 herbivoresCreated = true;
                 return;
             }
 
             if(herbivoresCreated && !carnivoresCreated)
             {
-                GenerateInitialAnimals(carnivore, initialCarnivoreCount);
+                GenerateInitialAnimals(carnivore, initialCarnivoreCount, false);
                 carnivoresCreated = true;
                 return;
             }
@@ -54,23 +53,27 @@ public class Simulation : MonoBehaviour
     }
 
     //Generation Methods
-    private void GenerateInitialAnimals(GameObject prefab, int count)
+    private void GenerateInitialAnimals(GameObject prefab, int count, bool t)
     {
         for (int i = 0; i < count; i++)
         {
             Tile place = tiles[Random.Range(0, tiles.Count)];
             tiles.Remove(place);
             Gender gender = (i % 2 == 0) ? Gender.Male : Gender.Female;
-            GenerateAnimal(prefab, place.transform.position, gender);
+            GenerateAnimal(prefab, place.transform.position, t, gender);
         }
     }
 
-    public void GenerateAnimal(GameObject animalPrefab, Vector3 spawnPos, Gender gen = Gender.Unknown)
+    public void GenerateAnimal(GameObject animalPrefab, Vector3 spawnPos, bool t, Gender gen = Gender.Unknown)
     {
         Vector3 pos = spawnPos + new Vector3(0, 0.5f, 0);
         Animal g = Instantiate(animalPrefab, pos, Quaternion.identity, transform).GetComponent<Animal>();
         g.Initialize(GetNameForAnimal(), GenGenderForAnimal(gen));
-        animals.Add(g);
+
+        if (t)
+            herbivores.Add(g as Herbivore);
+        else
+            carnivores.Add(g as Carnivore);
     }
 
     //Utility Methods
