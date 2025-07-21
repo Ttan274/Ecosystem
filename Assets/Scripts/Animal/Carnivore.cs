@@ -6,11 +6,6 @@ public class Carnivore : Animal
     [SerializeField] private float checkPrey;
     private float checkTimer = 0;
 
-    protected override void Start()
-    {
-        base.Start();
-    }
-
     protected override void Update()
     {
         base.Update();

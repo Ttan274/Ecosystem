@@ -6,7 +6,6 @@ public class AdminPanel : MonoBehaviour
     private CanvasGroup canvasGroup;
     private bool isOpen = false;
     private GameObject[] bars;
-    private bool updateBars = false;
 
     public static AdminPanel Instance;
 
@@ -22,9 +21,7 @@ public class AdminPanel : MonoBehaviour
     private void Update()
     {
         ChangeAdminPanelVisibility();
-
-        if (updateBars)
-            UpdateAdminPanel();
+        UpdateAdminPanel();
     }
 
     private void UpdateAdminPanel()
@@ -33,7 +30,7 @@ public class AdminPanel : MonoBehaviour
         for (int i = 0; i < animals.Count; i++)
         {
             AnimalAdminUI a = bars[i].GetComponent<AnimalAdminUI>();
-            a.SetUIBar(animals[i].animalName, animals[i].gender.ToString(), animals[i].status);
+            a.SetUIBar(animals[i].animalName, animals[i].gender.ToString(), animals[i].status.ToString());
         }
     }
 
@@ -52,9 +49,7 @@ public class AdminPanel : MonoBehaviour
     private void ChangeBarVisibility(bool x)
     {
         for (int i = 0; i < Simulation.Instance.animalsCount; i++)
-        {
             bars[i].SetActive(x);
-        }
     }
     
     private void ChangeAdminPanelVisibility()
@@ -66,14 +61,12 @@ public class AdminPanel : MonoBehaviour
                 isOpen = true;
                 canvasGroup.alpha = 1;
                 ChangeBarVisibility(isOpen);
-                updateBars = true;
             }
             else
             {
                 isOpen = false;
                 canvasGroup.alpha = 0;
                 ChangeBarVisibility(isOpen);
-                updateBars = false;
             }
         }
     }

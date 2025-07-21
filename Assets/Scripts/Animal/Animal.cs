@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Xml.Linq;
 using UnityEngine;
 
 public class Animal : MonoBehaviour
@@ -6,12 +7,7 @@ public class Animal : MonoBehaviour
     [Header("Identity")]
     public Gender gender {get; private set;}
     public string animalName { get; private set;}
-    public string status => state.ToString();
-    public void SetAnimalName(string anName)
-    {
-        animalName = anName;
-        gameObject.name = animalName;
-    }
+    public AnimalState status => state;
 
     [Header("Movement")]
     [SerializeField] protected AnimalState state = AnimalState.Idle;
@@ -39,13 +35,20 @@ public class Animal : MonoBehaviour
     private float currentThirst;
     private bool canSearchWater = true;
     private float searchWaterTimer = 0;
-    protected bool canMate => currentHunger >= 80f && currentThirst >= 80f;
-    
+
+    [Header("Mating")]
+    [SerializeField] private float matingCooldown;
+    [SerializeField] private float matingThreshold;
+    [SerializeField] protected float matingDistance;
+    protected float matingTimer = 0;
+    protected bool IsReadyToMate => matingTimer >= matingCooldown
+                                    && currentHunger >= 100f * matingThreshold
+                                    && currentThirst >= 100f * matingThreshold;
     //UI
     private AnimalUI animUI;
     private Color gizmoColor;
 
-    protected virtual void Start()
+    public void Initialize(string aName, Gender g)
     {
         gizmoColor = Random.ColorHSV();
         animUI = GetComponentInChildren<AnimalUI>();
@@ -53,7 +56,9 @@ public class Animal : MonoBehaviour
         currentHunger = 100f;
         currentThirst = 100f;
 
-        gender = (Random.value < 0.5f) ? Gender.Male : Gender.Female;
+        animalName = aName;
+        gameObject.name = animalName;
+        gender = g; // (Random.value < 0.5f) ? Gender.Male : Gender.Female;
         animUI.SetGenderBar(gender);
     }
 
@@ -106,13 +111,6 @@ public class Animal : MonoBehaviour
 
     private void UpdateNeeds2()
     {
-        if(state == AnimalState.Mate)
-        {
-            canSearchWater = false;
-            canSearchFood = false;
-            return;
-        }
-
         if (!canSearchWater)
         {
             searchWaterTimer += Time.deltaTime;
@@ -133,7 +131,13 @@ public class Animal : MonoBehaviour
                 searchFoodTimer = 0;
             }
         }
+
+        matingTimer += Time.deltaTime;
+        if (IsReadyToMate)
+            FindMate();
     }
+
+    protected virtual void FindMate(){ }
 
     protected void WaterSearch()
     {
@@ -249,6 +253,7 @@ public enum AnimalState
 
 public enum Gender
 {
+    Unknown,
     Male,
     Female
 }

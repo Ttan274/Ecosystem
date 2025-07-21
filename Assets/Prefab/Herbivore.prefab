@@ -605,8 +605,9 @@ MonoBehaviour:
   thirstThreshold: 50
   drinkDistance: 0.6
   waitForThirst: 8
-  waitForMate: 0
-  mate: {fileID: 0}
+  matingCooldown: 10
+  matingThreshold: 0.9
+  matingDistance: 3
 --- !u!1 &7472931758190481384
 GameObject:
   m_ObjectHideFlags: 0

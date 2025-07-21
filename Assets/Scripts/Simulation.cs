@@ -4,9 +4,9 @@ using UnityEngine;
 public class Simulation : MonoBehaviour
 {
     [Header("Entity Details")]
-    [SerializeField] private GameObject herbivore;
+    public GameObject herbivore;
     [SerializeField] private int initialHerbivoreCount;
-    [SerializeField] private GameObject carnivore;
+    public GameObject carnivore;
     [SerializeField] private int initialCarnivoreCount;
 
     private List<Animal> animals = new List<Animal>();
@@ -59,11 +59,24 @@ public class Simulation : MonoBehaviour
         {
             Tile place = tiles[Random.Range(0, tiles.Count)];
             tiles.Remove(place);
-            Vector3 spawnPos = place.transform.position + new Vector3(0, 0.5f, 0);
-            Animal g = Instantiate(prefab, spawnPos, Quaternion.identity).GetComponent<Animal>();
-            g.SetAnimalName(GetNameForAnimal());
-            animals.Add(g);
+            Gender gender = (i % 2 == 0) ? Gender.Male : Gender.Female;
+            GenerateAnimal(prefab, place.transform.position, gender);
         }
+    }
+
+    public void GenerateAnimal(GameObject animalPrefab, Vector3 spawnPos, Gender gen = Gender.Unknown)
+    {
+        Vector3 pos = spawnPos + new Vector3(0, 0.5f, 0);
+        Animal g = Instantiate(animalPrefab, pos, Quaternion.identity).GetComponent<Animal>();
+        
+        Gender gender;
+        if (gen != Gender.Unknown)
+            gender = gen;
+        else
+            gender = (Random.value < 0.5f) ? Gender.Male : Gender.Female;
+
+        g.Initialize(GetNameForAnimal(), gender);
+        animals.Add(g);
     }
 
     private string GetNameForAnimal()

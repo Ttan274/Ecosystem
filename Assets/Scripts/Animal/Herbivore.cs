@@ -2,13 +2,6 @@ using UnityEngine;
 
 public class Herbivore : Animal
 {
-    [SerializeField] private Herbivore mate;
-    public bool IsHaveMate => mate != null;
-    protected override void Start()
-    {
-        base.Start();
-    }
-
     protected override void Update()
     {
         base.Update();
@@ -65,4 +58,35 @@ public class Herbivore : Animal
     }
 
     public void GotEaten() => Destroy(gameObject);
+
+    protected override void FindMate()
+    {
+        Herbivore[] herbivores = FindObjectsByType<Herbivore>(FindObjectsSortMode.None);
+
+        foreach (Herbivore other in herbivores)
+        {
+            if (other == this || !other.IsReadyToMate || other.gender == this.gender) continue;
+
+            float distance = Vector3.Distance(transform.position, other.transform.position);
+            if(distance <= matingDistance)
+            {
+                Vector3 pos = (this.gender == Gender.Female) ? this.transform.position : other.transform.position;
+                Breed(other, pos);
+                break;
+            }
+        }
+    }
+
+    private void Breed(Herbivore partner, Vector3 pos)
+    {
+        //Instantiate a child herbivore
+        Simulation.Instance.GenerateAnimal(Simulation.Instance.herbivore, pos);
+        
+        //debugging
+        Debug.Log($"{this.name} and {partner.name} have bred!");
+
+        //resetting mating datas;
+        matingTimer = 0;
+        partner.matingTimer = 0;
+    }
 }

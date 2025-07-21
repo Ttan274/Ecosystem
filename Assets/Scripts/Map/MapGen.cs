@@ -60,6 +60,7 @@ public class MapGen : MonoBehaviour
         //Initalizing Pathfinder For Animals
         Pathfinder.Instance.Initialize(tiles, width, height);
         Simulation.Instance.Initalize(ShuffleGroundTiles());
+        Camera.main.GetComponent<CameraController>().SetFocusPoint(tiles[width / 2, height / 2].transform);
     }
 
     private void CreateLakes()
