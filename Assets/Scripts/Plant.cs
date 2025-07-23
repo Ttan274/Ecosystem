@@ -8,7 +8,8 @@ public class Plant : MonoBehaviour
 
     public void Eat()
     {
-        parentTile.ResetTile();
+        if (!Simulation.Instance.IsDroughtEnabled)
+            parentTile.ResetTile();
         Destroy(gameObject);
     }
 }

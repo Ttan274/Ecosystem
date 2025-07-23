@@ -25,6 +25,7 @@ public class Animal : MonoBehaviour
     protected float currentHunger;
     protected bool canSearchFood = true;
     private float searchFoodTimer = 0;
+    protected bool canSearch = true;
 
     [Header("Thirst")]
     [SerializeField] private float thirstDecayRate;
@@ -41,9 +42,16 @@ public class Animal : MonoBehaviour
     [SerializeField] protected float matingDistance;
     protected float matingTimer = 0;
     protected bool hasMate = false;
-    protected bool IsReadyToMate => !hasMate && matingTimer >= matingCooldown
+    protected bool IsReadyToMate => !isInfected && !hasMate && matingTimer >= matingCooldown
                                     && currentHunger >= 100f * matingThreshold
                                     && currentThirst >= 100f * matingThreshold;
+
+    [Header("Health")]
+    [SerializeField] private float infectionDamage;
+    [SerializeField] private float needsDamage;
+    private float currentHealth;
+    public bool isInfected {get; private set;} = false;
+    
     //UI
     private AnimalUI animUI;
     private Color gizmoColor;
@@ -55,6 +63,7 @@ public class Animal : MonoBehaviour
 
         currentHunger = 100f;
         currentThirst = 100f;
+        currentHealth = 100f;
 
         animalName = aName;
         gameObject.name = animalName;
@@ -79,6 +88,9 @@ public class Animal : MonoBehaviour
                 WaterSearch();
                 break;
         }
+
+        if(isInfected)
+            Die(infectionDamage);
     }
 
     #region Needs
@@ -101,6 +113,9 @@ public class Animal : MonoBehaviour
             state = AnimalState.SeekWater;
         if (currentHunger > hungerThreshold && currentThirst > thirstThreshold)
             state = AnimalState.Wander;
+
+        if (currentHunger <= 0 || currentThirst <= 0)
+            Die(needsDamage);
 
         animUI.SetHunger(currentHunger, 100f);
         animUI.SetThirst(currentThirst, 100f);
@@ -224,6 +239,19 @@ public class Animal : MonoBehaviour
         canSearchFood = false;
     }
 
+    protected virtual void Die(float damage)
+    {
+        currentHealth -= damage * Time.deltaTime;
+        if (currentHealth <= 0)
+            Destroy(gameObject);
+    }
+    
+    public void Infect()
+    {
+        isInfected = true;
+        GetComponent<MeshRenderer>().material.color = Color.green;
+    }
+    
     //debugging
     protected void OnDrawGizmos()
     {

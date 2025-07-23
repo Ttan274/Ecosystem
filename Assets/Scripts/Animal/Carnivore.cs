@@ -5,7 +5,6 @@ public class Carnivore : Animal
     [Header("Carnivore Details")]
     [SerializeField] private float checkPrey;
     private float checkTimer = 0;
-    private bool canSearchPrey = true;
     protected override void Update()
     {
         base.Update();
@@ -15,7 +14,7 @@ public class Carnivore : Animal
 
     protected override void FoodSearch()
     {
-        if (!canSearchPrey)
+        if (!canSearch)
         {
             //No food left for carnivores
             return;
@@ -50,7 +49,7 @@ public class Carnivore : Animal
 
         if (herbivores.Length <= 0)
         {
-            canSearchPrey = false;
+            canSearch = false;
             return;
         }
 

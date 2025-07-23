@@ -484,7 +484,7 @@ GameObject:
   - component: {fileID: 6904049608672598724}
   - component: {fileID: 2055575758059517510}
   - component: {fileID: 856198508851454787}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Herbivore
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -608,6 +608,8 @@ MonoBehaviour:
   matingCooldown: 10
   matingThreshold: 0.7
   matingDistance: 3
+  infectionDamage: 5
+  needsDamage: 5
 --- !u!1 &7472931758190481384
 GameObject:
   m_ObjectHideFlags: 0

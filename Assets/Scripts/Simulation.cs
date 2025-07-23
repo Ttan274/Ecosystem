@@ -8,9 +8,12 @@ public class Simulation : MonoBehaviour
     [SerializeField] private int initialHerbivoreCount;
     public GameObject carnivore;
     [SerializeField] private int initialCarnivoreCount;
+    [SerializeField] private float infectionChance = 0.4f;
+    public bool IsDroughtEnabled = false;
 
     public List<Carnivore> carnivores = new List<Carnivore>();
     public List<Herbivore> herbivores = new List<Herbivore>();
+    public int totalAnimals => herbivores.Count + carnivores.Count;
     private bool herbivoresCreated = false;
     private bool carnivoresCreated = false;
 
@@ -52,7 +55,7 @@ public class Simulation : MonoBehaviour
         }
     }
 
-    //Generation Methods
+    #region Generation Methods
     private void GenerateInitialAnimals(GameObject prefab, int count, bool t)
     {
         for (int i = 0; i < count; i++)
@@ -75,8 +78,9 @@ public class Simulation : MonoBehaviour
         else
             carnivores.Add(g as Carnivore);
     }
+    #endregion
 
-    //Utility Methods
+    #region Utility Methods
     private Gender GenGenderForAnimal(Gender gen)
     {
         Gender gender;
@@ -95,4 +99,26 @@ public class Simulation : MonoBehaviour
         animalNames.Remove(n);
         return n;
     }
+    #endregion
+
+    #region Admin Behaviours
+    public void ApplyDisease(int count)
+    {
+        if (count > totalAnimals)
+            count = totalAnimals;
+
+        int counter = 0;
+        foreach (Herbivore h in herbivores)
+        {
+            if (counter == count) break;
+            if (!h.isInfected && Random.value <= infectionChance)
+            {
+                h.Infect();
+                counter++;
+            }
+        }
+    }
+
+    public void StartDrought(bool status) => IsDroughtEnabled = status;
+    #endregion
 }

@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class Herbivore : Animal
 {
+
     protected override void Update()
     {
         base.Update();
@@ -9,6 +10,9 @@ public class Herbivore : Animal
 
     protected override void FoodSearch()
     {
+        if(!canSearch)
+            return; //No food left for herbivores
+
         if (food == null)
         {
             FindFood();
@@ -35,6 +39,13 @@ public class Herbivore : Animal
     protected override void FindFood()
     {
         Plant[] allPlants = FindObjectsByType<Plant>(FindObjectsSortMode.None);
+
+        if (allPlants.Length <= 0)
+        {
+            canSearch = false;
+            return; //No plants left
+        }
+
         float closestDist = Mathf.Infinity;
         Plant closest = null;
 
