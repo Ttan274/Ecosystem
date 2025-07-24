@@ -26,9 +26,13 @@ public class InGameUI : MonoBehaviour
         switch (type)
         {
             case SpeedType.Increase:
+                if (isStopped)
+                    return;
                 timeS *= 2f;
                 break;
             case SpeedType.Decrease:
+                if (isStopped)
+                    return;
                 timeS /= 2f;
                 break;
             case SpeedType.Pause:

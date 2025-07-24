@@ -4,15 +4,8 @@ public class AdminPanel : MonoBehaviour
 {
     [SerializeField] private GameObject animalRow;
     [SerializeField] private Transform animalTable;
-    private bool isActive = false;
-    private CanvasGroup canvas;
 
     [SerializeField] private Camera minimapCam;
-
-    private void Awake()
-    {
-        canvas = GetComponent<CanvasGroup>();
-    }
 
     public void ShowHerbivores()
     {
@@ -82,15 +75,6 @@ public class AdminPanel : MonoBehaviour
             minimapCam.transform.position.y,
             Mathf.Clamp(minimapCam.transform.position.z, 0f, 40f)
         );
-    }
-
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.M))
-        {
-            isActive = !isActive;
-            canvas.alpha = isActive ? 1 : 0;
-        }
     }
 }
 
