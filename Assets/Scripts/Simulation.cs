@@ -1,3 +1,4 @@
+using Mono.Cecil;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,7 +14,18 @@ public class Simulation : MonoBehaviour
 
     public List<Carnivore> carnivores = new List<Carnivore>();
     public List<Herbivore> herbivores = new List<Herbivore>();
-    public int totalAnimals => herbivores.Count + carnivores.Count;
+    public int carnivoreCount => carnivores.Count;
+    public int herbivoreCount => herbivores.Count;
+    public int totalAnimals => carnivoreCount + herbivoreCount;
+    
+    [HideInInspector] public int plantsEaten = 0;
+    [HideInInspector] public int plantsRegrow = 0;
+    [HideInInspector] public int herbivoreEaten = 0;
+    [HideInInspector] public int herbivoreBorn = 0;
+    [HideInInspector] public int carnivoreBorn = 0;
+    [HideInInspector] public int diseaseApplied = 0;
+    [HideInInspector] public float droughtTimer = 0f;
+
     private bool herbivoresCreated = false;
     private bool carnivoresCreated = false;
 
@@ -53,6 +65,9 @@ public class Simulation : MonoBehaviour
                 return;
             }
         }
+
+        if (IsDroughtEnabled)
+            droughtTimer += Time.deltaTime;
     }
 
     #region Generation Methods
@@ -114,6 +129,7 @@ public class Simulation : MonoBehaviour
             if (!h.isInfected && Random.value <= infectionChance)
             {
                 h.Infect();
+                diseaseApplied += count;
                 counter++;
             }
         }
@@ -121,4 +137,26 @@ public class Simulation : MonoBehaviour
 
     public void StartDrought(bool status) => IsDroughtEnabled = status;
     #endregion
+
+    public SimulationData GetRecord()
+    {
+        var data = new SimulationData
+        {
+            time = Time.time,
+            droughtTimer = droughtTimer,
+            diseaseApplied = diseaseApplied,
+
+            herbivores = herbivoreCount,
+            herbivoreEaten = herbivoreEaten,
+            herbivoreBorn = herbivoreBorn,
+
+            carnivores = carnivoreCount,
+            carnivoreBorn = carnivoreBorn,
+
+            plantsEaten = plantsEaten,
+            plantsRegrow = plantsRegrow
+        };
+
+        return data;
+    }
 }

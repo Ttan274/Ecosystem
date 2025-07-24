@@ -68,7 +68,11 @@ public class Herbivore : Animal
         base.Eat();
     }
 
-    public void GotEaten() => Destroy(gameObject);
+    public void GotEaten()
+    {
+        Simulation.Instance.herbivoreEaten++;
+        Destroy(gameObject);
+    }
 
     protected override void FindMate()
     {
@@ -94,10 +98,8 @@ public class Herbivore : Animal
     {
         //Instantiate a child herbivore
         Simulation.Instance.GenerateAnimal(Simulation.Instance.herbivore, pos, true);
+        Simulation.Instance.herbivoreBorn++;
         
-        //debugging
-        Debug.Log($"{this.name} and {partner.name} have bred!");
-
         //resetting mating datas;
         matingTimer = 0;
         partner.matingTimer = 0;

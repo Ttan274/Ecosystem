@@ -99,9 +99,7 @@ public class Carnivore : Animal
     {
         //Instantiate a child herbivore
         Simulation.Instance.GenerateAnimal(Simulation.Instance.carnivore, pos, false);
-
-        //debugging
-        Debug.Log($"{this.name} and {partner.name} have bred!");
+        Simulation.Instance.carnivoreBorn++;
 
         //resetting mating datas;
         matingTimer = 0;

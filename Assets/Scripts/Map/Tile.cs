@@ -58,6 +58,7 @@ public class Tile : MonoBehaviour
     public void ResetTile()
     {
         hasPlant = false;
+        Simulation.Instance.plantsRegrow++;
         MapGen.Instance.CreateBush(1);
     }
 }
