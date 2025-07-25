@@ -3,12 +3,18 @@ using UnityEngine;
 
 public class Pathfinder : MonoBehaviour
 {
-    public static Pathfinder Instance { get; private set; }
+    public static Pathfinder Instance;
     private Tile[,] tiles;
     private int width, height;
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
     }
 
@@ -115,18 +121,15 @@ public class Pathfinder : MonoBehaviour
         return dest;
     }
 
-    private bool IsInsideMap(int pX, int pZ)
-    {
-        return pX >= 0 && pX < width && pZ >= 0 && pZ < height;
-    }
-
+    private bool IsInsideMap(int pX, int pZ) => pX >= 0 && pX < width && pZ >= 0 && pZ < height;
+  
     public Tile GetTileGrid(int pX, int pZ)
     {
         if(IsInsideMap(pX, pZ))
             return tiles[pX, pZ];
         return null;
     }
-
+    
     public Tile GetClosestWaterTile(Tile current)
     {
         Tile closest = null;

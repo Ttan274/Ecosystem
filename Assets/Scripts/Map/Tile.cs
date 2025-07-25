@@ -59,7 +59,7 @@ public class Tile : MonoBehaviour
     {
         hasPlant = false;
         Simulation.Instance.plantsRegrow++;
-        MapGen.Instance.CreateBush(1);
+        MapGen.Instance.CreateBush();
     }
 }
 

@@ -30,25 +30,16 @@ public class MapGen : MonoBehaviour
 
     private void Start()
     {
-        GenerateMap();
-    }
-
-    private void GenerateMap()
-    {
         tiles = new Tile[width, height];
         lakeMap = new bool[width, height];
+        Generate();
+    }
 
-        // Step 1: Spawn all tiles as ground
-        for (int x = 0; x < width; x++)
-        {
-            for (int z = 0; z < height; z++)
-            {
-                Vector3 pos = new Vector3(x, 0, z);
-                Tile tile = Instantiate(tilePrefab, pos, Quaternion.identity, transform).GetComponent<Tile>();
-                tile.SetType(TileType.Ground, x, z);
-                tiles[x, z] = tile;
-            }
-        }
+    #region MapGeneration Methods
+    private void Generate()
+    {
+        //Step 1 : Spawn all tiles as ground
+        GenerateMap();
 
         // Step 2: Create lakes
         CreateLakes();
@@ -63,6 +54,20 @@ public class MapGen : MonoBehaviour
         Camera.main.GetComponent<CameraController>().SetFocusPoint(tiles[width / 2, height / 2].transform);
     }
 
+    private void GenerateMap()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int z = 0; z < height; z++)
+            {
+                Vector3 pos = new Vector3(x, 0, z);
+                Tile tile = Instantiate(tilePrefab, pos, Quaternion.identity, transform).GetComponent<Tile>();
+                tile.SetType(TileType.Ground, x, z);
+                tiles[x, z] = tile;
+            }
+        }
+    }
+
     private void CreateLakes()
     {
         int placed = 0;
@@ -71,8 +76,8 @@ public class MapGen : MonoBehaviour
         {
             attemps++;
 
-            int cx = Random.Range(lakeRadius, width - lakeRadius);
-            int cz = Random.Range(lakeRadius, height - lakeRadius);
+            int cx = Random.Range(lakeRadius, width);
+            int cz = Random.Range(lakeRadius, height);
 
             if (CheckOverlap(cx, cz, lakeRadius)) continue;
 
@@ -102,26 +107,22 @@ public class MapGen : MonoBehaviour
         }
     }
 
-    private List<Tile> ShuffleGroundTiles()
+    private bool CheckOverlap(int cx, int cz, int radius)
     {
-        List<Tile> groundTiles = new List<Tile>();
-        for (int x = 0; x < width; x++)
+        int checkRadius = Mathf.CeilToInt(radius * 0.5f); // Allow closer lakes
+
+        for (int x = cx - checkRadius; x <= cx + checkRadius; x++)
         {
-            for (int z = 0; z < height; z++)
+            for (int z = cz - checkRadius; z <= cz + checkRadius; z++)
             {
-                Tile t = tiles[x, z];
-                if (t.tileType == TileType.Ground && !t.hasTree && !t.hasPlant)
-                    groundTiles.Add(tiles[x, z]);
+                if (x >= 0 && x < width && z >= 0 && z < height)
+                {
+                    if (lakeMap[x, z])
+                        return true;
+                }
             }
         }
-        //shuffle groundlist for trees
-        for (int i = groundTiles.Count - 1; i > 0; i--)
-        {
-            int j = Random.Range(0, i + 1);
-            (groundTiles[i], groundTiles[j]) = (groundTiles[j], groundTiles[i]);
-        }
-
-        return groundTiles;
+        return false;
     }
 
     private void CreatePlantables(PlantableObject plantable)
@@ -147,33 +148,39 @@ public class MapGen : MonoBehaviour
             }
         }
     }
+    #endregion
 
-    public void CreateBush(int total)
+    #region Utility Methods
+    private List<Tile> ShuffleGroundTiles()
     {
-        List<Tile> groundTiles = ShuffleGroundTiles();
-
-        for (int i = 0; i < total; i++)
+        List<Tile> groundTiles = new List<Tile>();
+        for (int x = 0; x < width; x++)
         {
-            int rand = Random.Range(0, groundTiles.Count);
-            groundTiles[i].PlacePlant(bush.prefab);
-        }
-    }
-
-    private bool CheckOverlap(int cx, int cz, int radius)
-    {
-        for (int x = cx - radius; x <= cx + radius; x++)
-        {
-            for (int z = cz - radius; z <= cz + radius; z++)
+            for (int z = 0; z < height; z++)
             {
-                if (x >= 0 && x < width && z >= 0 && z < height)
-                {
-                    if (lakeMap[x, z])
-                        return true;
-                }
+                Tile t = tiles[x, z];
+                if (t.tileType == TileType.Ground && !t.hasTree && !t.hasPlant)
+                    groundTiles.Add(tiles[x, z]);
             }
         }
-        return false;
+        //shuffle groundlist for trees
+        for (int i = 0; i < groundTiles.Count - 1; ++i)
+        {
+            int j = Random.Range(i, groundTiles.Count);
+            var temp = groundTiles[i];
+            groundTiles[i] = groundTiles[j];
+            groundTiles[j] = temp;
+        }
+
+        return groundTiles;
     }
+
+    public void CreateBush()
+    {
+        List<Tile> groundTiles = ShuffleGroundTiles();
+        groundTiles[0].PlacePlant(bush.prefab);
+    }
+    #endregion
 }
 
 [System.Serializable]

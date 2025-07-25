@@ -243,7 +243,10 @@ public class Animal : MonoBehaviour
     {
         currentHealth -= damage * Time.deltaTime;
         if (currentHealth <= 0)
+        {
+            Simulation.Instance.RemoveAnimal(this);
             Destroy(gameObject);
+        }
     }
     
     public void Infect()

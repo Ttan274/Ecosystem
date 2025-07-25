@@ -19,6 +19,48 @@ public class InGameUI : MonoBehaviour
         SetSpeedText();
     }
 
+    #region Simulation Control Region
+    public void CreateHerbivore(TMP_InputField field)
+    {
+       if(CanCreateEntity(field, out int size))
+            Simulation.Instance.GenerateInitialAnimals(Simulation.Instance.herbivore, size, true);
+    }
+
+    public void CreateCarnivore(TMP_InputField field)
+    {
+        if (CanCreateEntity(field, out int size))
+            Simulation.Instance.GenerateInitialAnimals(Simulation.Instance.carnivore, size, false);
+    }
+
+    public void CreatePlant(TMP_InputField field)
+    {
+        if (CanCreateEntity(field, out int size))
+            Debug.Log("Plants has been added");
+    }
+
+    private bool CanCreateEntity(TMP_InputField field, out int size)
+    {
+        size = -1;
+        // Validate that the disease field is not empty
+        if (string.IsNullOrEmpty(field.text))
+        {
+            Debug.Log("Disease count cannot be empty!");
+            return false;
+        }
+
+        // Validate that the input is a positive integer
+        if (!int.TryParse(field.text, out size) || size <= 0)
+        {
+            Debug.Log("Invalid disease count provided!");
+            return false;
+        }
+
+        field.text = "Size";
+        return true;
+    }
+
+    #endregion
+
     #region Game Speed Control Region
     public void ChangeSpeed(int s) => ChangeSpeed((SpeedType)s);
     private void ChangeSpeed(SpeedType type)
@@ -82,6 +124,7 @@ public class InGameUI : MonoBehaviour
             return;
         }
 
+        diseaseField.text = "Size";
         Simulation.Instance.ApplyDisease(diseaseCount);
     }
 

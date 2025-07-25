@@ -625,7 +625,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 42167988f3ba7e1439e6c8d320147f79, type: 2}
+  - {fileID: 2100000, guid: 9888d32b66091aa47abdbbf1bc724202, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -682,7 +682,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   state: 0
   moveSpeed: 3
-  tileTolerance: 0.1
+  tileTolerance: 0.2
   randomWalkRange: 5
   hungerDecayRate: 2.5
   hungerThreshold: 50

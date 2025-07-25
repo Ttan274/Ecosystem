@@ -30,62 +30,14 @@ public class CameraController : MonoBehaviour
     private Transform focusPoint;
     private bool camActive = false;
 
-    public void StartFollowing(Transform t)
-    {
-        SetFocusPoint(t);
-        mode = CameraMode.Follow;
-    }
-
-    public void SetFocusPoint(Transform t)
-    {
-        if (terrain == null)
-        {
-            terrain = t;
-            camActive = true;
-        }
-
-        focusPoint = t;
-    }
-
     private void Update()
     {
         if (!camActive) return;
-
-        if(Input.GetKeyUp(switchKey))
-        {
-            switch (mode)
-            {
-                case CameraMode.Orbit:
-                    mode = CameraMode.Fly;
-                    CursorBehaviour(false);
-                    break;
-                case CameraMode.Fly:
-                    mode = CameraMode.Orbit;
-                    CursorBehaviour(true);
-                    break;
-                default:
-                    Debug.LogWarning("Mode is not defined");
-                    break;
-            }
-        }
-
-        switch (mode)
-        {
-            case CameraMode.Orbit:
-                UpdateOrbitBehaviour();
-                break;
-            case CameraMode.Follow:
-                UpdateFollowCamera();
-                break;
-            case CameraMode.Fly:
-                UpdateFlyBehaviour();
-                break;
-            default:
-                Debug.LogWarning("Mode is not defined");
-                break;
-        }
+        SwitchCameraMode();
+        UpdateCameraMode();
     }
 
+    #region CameraMode Methods
     private void UpdateFlyBehaviour()
     {
         lastMousePos = Input.mousePosition - lastMousePos;
@@ -137,31 +89,82 @@ public class CameraController : MonoBehaviour
         transform.LookAt(focusPoint.position);
         transform.RotateAround(focusPoint.position, rotAxis, rotSpeed * Time.unscaledDeltaTime);
     }
+    #endregion
+
+    #region Input Methods
+    private void SwitchCameraMode()
+    {
+        if (Input.GetKeyUp(switchKey))
+        {
+            switch (mode)
+            {
+                case CameraMode.Orbit:
+                    mode = CameraMode.Fly;
+                    CursorBehaviour(false);
+                    break;
+                case CameraMode.Fly:
+                    mode = CameraMode.Orbit;
+                    CursorBehaviour(true);
+                    break;
+                default:
+                    Debug.LogWarning("Mode is not defined");
+                    break;
+            }
+        }
+    }
 
     private Vector3 GetBaseInput()
     {
         Vector3 vel = new Vector3();
         if (Input.GetKey(KeyCode.W))
-        {
             vel += new Vector3(0, 0, 1);
-        }
         if (Input.GetKey(KeyCode.S))
-        {
             vel += new Vector3(0, 0, -1);
-        }
         if (Input.GetKey(KeyCode.A))
-        {
             vel += new Vector3(-1, 0, 0);
-        }
         if (Input.GetKey(KeyCode.D))
-        {
             vel += new Vector3(1, 0, 0);
-        }
         return vel;
     }
+    #endregion 
 
-    private void CursorBehaviour(bool status)
+    #region Utility Methods
+    private void UpdateCameraMode()
     {
-        Cursor.visible = status;
+        switch (mode)
+        {
+            case CameraMode.Orbit:
+                UpdateOrbitBehaviour();
+                break;
+            case CameraMode.Follow:
+                UpdateFollowCamera();
+                break;
+            case CameraMode.Fly:
+                UpdateFlyBehaviour();
+                break;
+            default:
+                Debug.LogWarning("Mode is not defined");
+                break;
+        }
     }
+
+    public void StartFollowing(Transform t)
+    {
+        SetFocusPoint(t);
+        mode = CameraMode.Follow;
+    }
+
+    public void SetFocusPoint(Transform t)
+    {
+        if (terrain == null)
+        {
+            terrain = t;
+            camActive = true;
+        }
+
+        focusPoint = t;
+    }
+
+    private void CursorBehaviour(bool status) => Cursor.visible = status;
+    #endregion
 }

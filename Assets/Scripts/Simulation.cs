@@ -1,4 +1,3 @@
-using Mono.Cecil;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,10 +5,7 @@ public class Simulation : MonoBehaviour
 {
     [Header("Entity Details")]
     public GameObject herbivore;
-    [SerializeField] private int initialHerbivoreCount;
     public GameObject carnivore;
-    [SerializeField] private int initialCarnivoreCount;
-    [SerializeField] private float infectionChance = 0.4f;
     public bool IsDroughtEnabled = false;
 
     public List<Carnivore> carnivores = new List<Carnivore>();
@@ -25,9 +21,6 @@ public class Simulation : MonoBehaviour
     [HideInInspector] public int carnivoreBorn = 0;
     [HideInInspector] public int diseaseApplied = 0;
     [HideInInspector] public float droughtTimer = 0f;
-
-    private bool herbivoresCreated = false;
-    private bool carnivoresCreated = false;
 
     //References
     [SerializeField]private List<string> animalNames = new List<string>() { "John", "Lucia", "Maxvel", "Naber", "Hello", "Wikwik", "Susangus", "Naber" };
@@ -49,29 +42,12 @@ public class Simulation : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.P))
-        {
-            if(!herbivoresCreated)
-            {
-                GenerateInitialAnimals(herbivore, initialHerbivoreCount, true);
-                herbivoresCreated = true;
-                return;
-            }
-
-            if(herbivoresCreated && !carnivoresCreated)
-            {
-                GenerateInitialAnimals(carnivore, initialCarnivoreCount, false);
-                carnivoresCreated = true;
-                return;
-            }
-        }
-
         if (IsDroughtEnabled)
             droughtTimer += Time.deltaTime;
     }
 
     #region Generation Methods
-    private void GenerateInitialAnimals(GameObject prefab, int count, bool t)
+    public void GenerateInitialAnimals(GameObject prefab, int count, bool t)
     {
         for (int i = 0; i < count; i++)
         {
@@ -114,24 +90,30 @@ public class Simulation : MonoBehaviour
         animalNames.Remove(n);
         return n;
     }
+
+    public void RemoveAnimal(Animal animal)
+    {
+        if (animal is Herbivore)
+            herbivores.Remove(animal as Herbivore);
+        else
+            carnivores.Remove(animal as Carnivore);
+    }
     #endregion
 
     #region Admin Behaviours
     public void ApplyDisease(int count)
     {
+        if (herbivores.Count == 0)
+            return;
+
         if (count > totalAnimals)
             count = totalAnimals;
 
-        int counter = 0;
-        foreach (Herbivore h in herbivores)
+        for (int i = 0; i < count; i++)
         {
-            if (counter == count) break;
-            if (!h.isInfected && Random.value <= infectionChance)
-            {
-                h.Infect();
-                diseaseApplied += count;
-                counter++;
-            }
+            int rand = Random.Range(0, herbivores.Count);
+            if (!herbivores[rand].isInfected)
+                herbivores[rand].Infect();
         }
     }
 
