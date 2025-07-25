@@ -104,5 +104,7 @@ public class Carnivore : Animal
         //resetting mating datas;
         matingTimer = 0;
         partner.matingTimer = 0;
+        hasMate = false;
+        partner.hasMate = false;
     }
 }

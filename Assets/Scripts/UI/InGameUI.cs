@@ -9,7 +9,6 @@ public class InGameUI : MonoBehaviour
     private float timeS;
 
     [Header("Disaster Panel")]
-    [SerializeField] private TMP_InputField diseaseField;
     [SerializeField] private TextMeshProUGUI droughtTxt;
     private bool isDroughtActive = false;
 
@@ -108,26 +107,8 @@ public class InGameUI : MonoBehaviour
     #endregion
 
     #region Disaster Control Region
-    public void ApplyDisease()
-    {
-        // Validate that the disease field is not empty
-        if (string.IsNullOrEmpty(diseaseField.text))
-        {
-            Debug.Log("Disease count cannot be empty!");
-            return;
-        }
-
-        // Validate that the input is a positive integer
-        if (!int.TryParse(diseaseField.text, out int diseaseCount) || diseaseCount <= 0)
-        {
-            Debug.Log("Invalid disease count provided!");
-            return;
-        }
-
-        diseaseField.text = "Size";
-        Simulation.Instance.ApplyDisease(diseaseCount);
-    }
-
+    public void ApplyDisease(bool isHerbivore) => Simulation.Instance.ApplyDisease(isHerbivore);
+    
     public void StartDrought()
     {
         isDroughtActive = !isDroughtActive;

@@ -76,8 +76,8 @@ public class MapGen : MonoBehaviour
         {
             attemps++;
 
-            int cx = Random.Range(lakeRadius, width);
-            int cz = Random.Range(lakeRadius, height);
+            int cx = Random.Range(0, width);
+            int cz = Random.Range(0, height);
 
             if (CheckOverlap(cx, cz, lakeRadius)) continue;
 

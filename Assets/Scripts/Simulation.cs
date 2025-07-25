@@ -12,6 +12,8 @@ public class Simulation : MonoBehaviour
     public List<Herbivore> herbivores = new List<Herbivore>();
     public int carnivoreCount => carnivores.Count;
     public int herbivoreCount => herbivores.Count;
+    public bool canCreateHerbivore => herbivoreCount < 25;
+    public bool canCreateCarnivore => carnivoreCount < 15;
     public int totalAnimals => carnivoreCount + herbivoreCount;
     
     [HideInInspector] public int plantsEaten = 0;
@@ -49,6 +51,9 @@ public class Simulation : MonoBehaviour
     #region Generation Methods
     public void GenerateInitialAnimals(GameObject prefab, int count, bool t)
     {
+        if (!canCreateHerbivore || !canCreateCarnivore)
+            return;
+
         for (int i = 0; i < count; i++)
         {
             Tile place = tiles[Random.Range(0, tiles.Count)];
@@ -60,6 +65,9 @@ public class Simulation : MonoBehaviour
 
     public void GenerateAnimal(GameObject animalPrefab, Vector3 spawnPos, bool t, Gender gen = Gender.Unknown)
     {
+        if (!canCreateHerbivore || !canCreateCarnivore)
+            return;
+
         Vector3 pos = spawnPos + new Vector3(0, 0.5f, 0);
         Animal g = Instantiate(animalPrefab, pos, Quaternion.identity, transform).GetComponent<Animal>();
         g.Initialize(GetNameForAnimal(), GenGenderForAnimal(gen));
@@ -101,20 +109,20 @@ public class Simulation : MonoBehaviour
     #endregion
 
     #region Admin Behaviours
-    public void ApplyDisease(int count)
+    public void ApplyDisease(bool isHerbivore)
     {
-        if (herbivores.Count == 0)
+        if (herbivores.Count == 0 || carnivores.Count == 0)
             return;
 
-        if (count > totalAnimals)
-            count = totalAnimals;
-
-        for (int i = 0; i < count; i++)
-        {
-            int rand = Random.Range(0, herbivores.Count);
+        int max = isHerbivore ? herbivores.Count : carnivores.Count;
+        int rand = Random.Range(0, max);
+            
+        if(isHerbivore)
             if (!herbivores[rand].isInfected)
                 herbivores[rand].Infect();
-        }
+        else
+            if (!carnivores[rand].isInfected)
+                carnivores[rand].Infect();
     }
 
     public void StartDrought(bool status) => IsDroughtEnabled = status;

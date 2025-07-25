@@ -118,6 +118,9 @@ public class Pathfinder : MonoBehaviour
 
         Tile dest = GetTileGrid(x, z);
 
+        if (dest == null)
+            Debug.Log("Tile bulunamadý");
+
         return dest;
     }
 

@@ -71,7 +71,7 @@ public class Herbivore : Animal
     public void GotEaten()
     {
         Simulation.Instance.herbivoreEaten++;
-        Destroy(gameObject);
+        Die(0f, true);
     }
 
     protected override void FindMate()

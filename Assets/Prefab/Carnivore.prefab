@@ -882,16 +882,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   state: 0
   moveSpeed: 4
-  tileTolerance: 0.1
-  randomWalkRange: 5
+  tileTolerance: 0.2
+  randomWalkRange: 8
   hungerDecayRate: 1
   hungerThreshold: 50
   eatDistance: 0.5
-  waitForHunger: 2
+  waitForHunger: 4
   thirstDecayRate: 3.5
   thirstThreshold: 50
   drinkDistance: 0.6
-  waitForThirst: 1.5
+  waitForThirst: 2
   matingCooldown: 10
   matingThreshold: 0.7
   matingDistance: 3

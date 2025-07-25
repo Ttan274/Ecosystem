@@ -683,7 +683,7 @@ MonoBehaviour:
   state: 0
   moveSpeed: 3
   tileTolerance: 0.2
-  randomWalkRange: 5
+  randomWalkRange: 8
   hungerDecayRate: 2.5
   hungerThreshold: 50
   eatDistance: 0.5

@@ -176,7 +176,11 @@ public class Animal : MonoBehaviour
     protected void RandomTarget()
     {
         Tile current = Pathfinder.Instance.GetTileAtPosition(transform.position);
-        if (current == null) return;
+        if (current == null)
+        {
+            Debug.Log("Hataburda");
+            return;
+        }
 
         bool canWalk = false;
         while (!canWalk)
@@ -233,19 +237,28 @@ public class Animal : MonoBehaviour
 
     protected virtual void Eat() 
     {
+       // food = null;
         currentPath.Clear();
         currentHunger = 100f;
         state = AnimalState.Wander;
         canSearchFood = false;
     }
 
-    protected virtual void Die(float damage)
+    protected virtual void Die(float damage, bool directDead = false)
     {
-        currentHealth -= damage * Time.deltaTime;
-        if (currentHealth <= 0)
+        if(directDead)
         {
             Simulation.Instance.RemoveAnimal(this);
             Destroy(gameObject);
+        }
+        else
+        {
+            currentHealth -= damage * Time.deltaTime;
+            if (currentHealth <= 0)
+            {
+                Simulation.Instance.RemoveAnimal(this);
+                Destroy(gameObject);
+            }
         }
     }
     
