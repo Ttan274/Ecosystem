@@ -111,18 +111,21 @@ public class Simulation : MonoBehaviour
     #region Admin Behaviours
     public void ApplyDisease(bool isHerbivore)
     {
-        if (herbivores.Count == 0 || carnivores.Count == 0)
-            return;
-
         int max = isHerbivore ? herbivores.Count : carnivores.Count;
+        if (max == 0)
+            return;
         int rand = Random.Range(0, max);
             
         if(isHerbivore)
+        {
             if (!herbivores[rand].isInfected)
                 herbivores[rand].Infect();
+        }
         else
+        {
             if (!carnivores[rand].isInfected)
                 carnivores[rand].Infect();
+        }
     }
 
     public void StartDrought(bool status) => IsDroughtEnabled = status;

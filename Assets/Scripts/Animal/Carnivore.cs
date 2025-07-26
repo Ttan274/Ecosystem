@@ -5,13 +5,14 @@ public class Carnivore : Animal
     [Header("Carnivore Details")]
     [SerializeField] private float checkPrey;
     private float checkTimer = 0;
+
     protected override void Update()
     {
         base.Update();
-
         checkTimer += Time.deltaTime;
     }
 
+    #region Food
     protected override void FoodSearch()
     {
         if (!canSearch)
@@ -74,7 +75,9 @@ public class Carnivore : Animal
         food.GetComponent<Herbivore>().GotEaten();
         base.Eat();
     }
+    #endregion
 
+    #region Mate
     protected override void FindMate()
     {
         Carnivore[] carnivores = FindObjectsByType<Carnivore>(FindObjectsSortMode.None);
@@ -107,4 +110,5 @@ public class Carnivore : Animal
         hasMate = false;
         partner.hasMate = false;
     }
+    #endregion
 }

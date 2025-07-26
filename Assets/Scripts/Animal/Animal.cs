@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 
 public class Animal : MonoBehaviour
@@ -150,29 +151,9 @@ public class Animal : MonoBehaviour
     }
 
     protected virtual void FindMate(){ }
-
-    protected void WaterSearch()
-    {
-        Tile current = Pathfinder.Instance.GetTileAtPosition(transform.position);
-        if (current == null) return;
-
-        Tile closestWater = Pathfinder.Instance.GetClosestWaterTile(current);
-        if (closestWater == null) return;
-
-        float distance = Vector3.Distance(transform.position, closestWater.transform.position);
-        if (distance < drinkDistance)
-        {
-            currentThirst = 100f;
-            currentPath.Clear();
-            state = AnimalState.Wander;
-            canSearchWater = false;
-            return;
-        }
-        SetPath(current, closestWater);
-        FollowPath();
-    }
     #endregion
-   
+
+    #region Movement
     protected void RandomTarget()
     {
         Tile current = Pathfinder.Instance.GetTileAtPosition(transform.position);
@@ -230,20 +211,44 @@ public class Animal : MonoBehaviour
         currentPath = Pathfinder.Instance.CreatePath(c, d);
         pathIndex = 0;
     }
+    #endregion
 
+    #region Food & Water
     protected virtual void FoodSearch() { }
 
     protected virtual void FindFood() { }
-
+    
     protected virtual void Eat() 
     {
-       // food = null;
         currentPath.Clear();
         currentHunger = 100f;
         state = AnimalState.Wander;
         canSearchFood = false;
     }
+   
+    protected void WaterSearch()
+    {
+        Tile current = Pathfinder.Instance.GetTileAtPosition(transform.position);
+        if (current == null) return;
 
+        Tile closestWater = Pathfinder.Instance.GetClosestWaterTile(current);
+        if (closestWater == null) return;
+
+        float distance = Vector3.Distance(transform.position, closestWater.transform.position);
+        if (distance < drinkDistance)
+        {
+            currentThirst = 100f;
+            currentPath.Clear();
+            state = AnimalState.Wander;
+            canSearchWater = false;
+            return;
+        }
+        SetPath(current, closestWater);
+        FollowPath();
+    }
+    #endregion
+
+    #region Health
     protected virtual void Die(float damage, bool directDead = false)
     {
         if(directDead)
@@ -265,8 +270,25 @@ public class Animal : MonoBehaviour
     public void Infect()
     {
         isInfected = true;
-        GetComponent<MeshRenderer>().material.color = Color.green;
+        StartCoroutine(InfectionBehaviour());
     }
+    
+    private IEnumerator InfectionBehaviour()
+    {
+        var renderer = GetComponent<MeshRenderer>();
+        Color defaultColor = renderer.material.color;
+
+        while (isInfected)
+        {
+            yield return new WaitForSeconds(0.2f);
+            renderer.material.color = Color.green;
+            yield return new WaitForSeconds(0.2f);
+            renderer.material.color = defaultColor;
+        }
+
+        renderer.material.color = defaultColor;
+    }
+    #endregion
     
     //debugging
     protected void OnDrawGizmos()

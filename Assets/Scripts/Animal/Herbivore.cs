@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class Herbivore : Animal
 {
-
     protected override void Update()
     {
         base.Update();
     }
 
+    #region Food
     protected override void FoodSearch()
     {
         if(!canSearch)
@@ -67,13 +67,9 @@ public class Herbivore : Animal
         food.GetComponent<Plant>().Eat();
         base.Eat();
     }
-
-    public void GotEaten()
-    {
-        Simulation.Instance.herbivoreEaten++;
-        Die(0f, true);
-    }
-
+    #endregion
+   
+    #region Mate
     protected override void FindMate()
     {
         Herbivore[] herbivores = FindObjectsByType<Herbivore>(FindObjectsSortMode.None);
@@ -105,5 +101,13 @@ public class Herbivore : Animal
         partner.matingTimer = 0;
         hasMate = false;
         partner.hasMate = false;
+    }
+    #endregion
+
+    //Helper method when eatg by carnivores
+    public void GotEaten()
+    {
+        Simulation.Instance.herbivoreEaten++;
+        Die(0f, true);
     }
 }

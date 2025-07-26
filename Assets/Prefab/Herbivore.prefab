@@ -695,7 +695,7 @@ MonoBehaviour:
   matingCooldown: 10
   matingThreshold: 0.7
   matingDistance: 3
-  infectionDamage: 5
+  infectionDamage: 10
   needsDamage: 5
 --- !u!1 &7472931758190481384
 GameObject:
