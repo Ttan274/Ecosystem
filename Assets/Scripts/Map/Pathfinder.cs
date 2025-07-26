@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -118,9 +119,6 @@ public class Pathfinder : MonoBehaviour
 
         Tile dest = GetTileGrid(x, z);
 
-        if (dest == null)
-            Debug.Log("Tile bulunamadý");
-
         return dest;
     }
 
@@ -128,11 +126,11 @@ public class Pathfinder : MonoBehaviour
   
     public Tile GetTileGrid(int pX, int pZ)
     {
-        if(IsInsideMap(pX, pZ))
-            return tiles[pX, pZ];
+        if (IsInsideMap(pX, pZ))
+             return tiles[pX, pZ];
         return null;
     }
-    
+
     public Tile GetClosestWaterTile(Tile current)
     {
         Tile closest = null;

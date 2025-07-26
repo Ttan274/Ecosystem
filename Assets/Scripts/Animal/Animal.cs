@@ -17,6 +17,10 @@ public class Animal : MonoBehaviour
     private int pathIndex = 0;
     protected List<Tile> currentPath = new List<Tile>();
 
+    [Header("Animation")]
+    [SerializeField] private string walkAnimation = "walk_forward";
+    private Animator animator;
+
     [Header("Hunger")]
     [SerializeField] private float hungerDecayRate;
     [SerializeField] private float hungerThreshold;
@@ -57,10 +61,16 @@ public class Animal : MonoBehaviour
     private AnimalUI animUI;
     private Color gizmoColor;
 
+    private void Awake()
+    {
+        Initialize("slm", Gender.Male);
+    }
+
     public void Initialize(string aName, Gender g)
     {
         gizmoColor = Random.ColorHSV();
         animUI = GetComponentInChildren<AnimalUI>();
+        animator = GetComponent<Animator>();
 
         currentHunger = 100f;
         currentThirst = 100f;
@@ -157,11 +167,7 @@ public class Animal : MonoBehaviour
     protected void RandomTarget()
     {
         Tile current = Pathfinder.Instance.GetTileAtPosition(transform.position);
-        if (current == null)
-        {
-            Debug.Log("Hataburda");
-            return;
-        }
+        if (current == null) return;
 
         bool canWalk = false;
         while (!canWalk)
@@ -170,6 +176,12 @@ public class Animal : MonoBehaviour
             int pZ = current.z + Random.Range(-Mathf.RoundToInt(randomWalkRange), Mathf.RoundToInt(randomWalkRange));
 
             Tile destination = Pathfinder.Instance.GetTileGrid(pX, pZ);
+            if (destination == null)
+            {
+                Debug.Log("Nabersin05");
+                destination = current;
+            }
+
             if (destination != null && current != null && destination.IsWalkable())
             {
                 canWalk = true;
@@ -203,6 +215,8 @@ public class Animal : MonoBehaviour
     {
         Vector3 dir = (targetPos - transform.position).normalized;
         transform.position += dir * moveSpeed * Time.deltaTime;
+        if(animator != null)
+            animator.Play(walkAnimation);
         transform.LookAt(new Vector3(targetPos.x, transform.position.y, targetPos.z));
     }
 
@@ -237,8 +251,8 @@ public class Animal : MonoBehaviour
         float distance = Vector3.Distance(transform.position, closestWater.transform.position);
         if (distance < drinkDistance)
         {
-            currentThirst = 100f;
             currentPath.Clear();
+            currentThirst = 100f;
             state = AnimalState.Wander;
             canSearchWater = false;
             return;
