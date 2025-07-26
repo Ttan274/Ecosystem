@@ -22,13 +22,13 @@ public class InGameUI : MonoBehaviour
     public void CreateHerbivore(TMP_InputField field)
     {
        if(CanCreateEntity(field, out int size))
-            Simulation.Instance.GenerateInitialAnimals(Simulation.Instance.herbivore, size, true);
+            Simulation.Instance.GenerateInitialAnimals(true, size);
     }
 
     public void CreateCarnivore(TMP_InputField field)
     {
         if (CanCreateEntity(field, out int size))
-            Simulation.Instance.GenerateInitialAnimals(Simulation.Instance.carnivore, size, false);
+            Simulation.Instance.GenerateInitialAnimals(false, size);
     }
 
     public void CreatePlant(TMP_InputField field)

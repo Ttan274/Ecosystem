@@ -4,7 +4,8 @@ using UnityEngine;
 public class Simulation : MonoBehaviour
 {
     [Header("Entity Details")]
-    public GameObject herbivore;
+    public GameObject sheep;
+    public GameObject goat;
     public GameObject carnivore;
     public bool IsDroughtEnabled = false;
 
@@ -49,7 +50,7 @@ public class Simulation : MonoBehaviour
     }
 
     #region Generation Methods
-    public void GenerateInitialAnimals(GameObject prefab, int count, bool t)
+    public void GenerateInitialAnimals(bool isHerbivore, int count)
     {
         if (!canCreateHerbivore || !canCreateCarnivore)
             return;
@@ -59,20 +60,26 @@ public class Simulation : MonoBehaviour
             Tile place = tiles[Random.Range(0, tiles.Count)];
             tiles.Remove(place);
             Gender gender = (i % 2 == 0) ? Gender.Male : Gender.Female;
-            GenerateAnimal(prefab, place.transform.position, t, gender);
+            GenerateAnimal(isHerbivore, place.transform.position, gender);
         }
     }
 
-    public void GenerateAnimal(GameObject animalPrefab, Vector3 spawnPos, bool t, Gender gen = Gender.Unknown)
+    public void GenerateAnimal(bool isHerbivore, Vector3 spawnPos, Gender gen = Gender.Unknown)
     {
         if (!canCreateHerbivore || !canCreateCarnivore)
             return;
 
+        //Setting up the gender and prefab for the animal
+        Gender gender = GenGenderForAnimal(gen);
+        GameObject animalPrefab = GetAnimalPrefab(isHerbivore, gender);
+
+        //Spawning the animal
         Vector3 pos = spawnPos + new Vector3(0, 0.5f, 0);
         Animal g = Instantiate(animalPrefab, pos, Quaternion.identity, transform).GetComponent<Animal>();
-        g.Initialize(GetNameForAnimal(), GenGenderForAnimal(gen));
+        g.Initialize(GetNameForAnimal(), gender);
 
-        if (t)
+        //Listing the animal
+        if (isHerbivore)
             herbivores.Add(g as Herbivore);
         else
             carnivores.Add(g as Carnivore);
@@ -99,6 +106,16 @@ public class Simulation : MonoBehaviour
         return n;
     }
 
+    private GameObject GetAnimalPrefab(bool isHerbivore, Gender gender)
+    {
+        GameObject animalPrefab = null;
+        if (isHerbivore)
+            animalPrefab = (gender == Gender.Male) ? goat : sheep;
+        else 
+            animalPrefab = carnivore;
+        return animalPrefab;
+    }
+    
     public void RemoveAnimal(Animal animal)
     {
         if (animal is Herbivore)

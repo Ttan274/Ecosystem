@@ -177,10 +177,7 @@ public class Animal : MonoBehaviour
 
             Tile destination = Pathfinder.Instance.GetTileGrid(pX, pZ);
             if (destination == null)
-            {
-                Debug.Log("Nabersin05");
                 destination = current;
-            }
 
             if (destination != null && current != null && destination.IsWalkable())
             {

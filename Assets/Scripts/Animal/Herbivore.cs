@@ -93,7 +93,7 @@ public class Herbivore : Animal
     private void Breed(Herbivore partner, Vector3 pos)
     {
         //Instantiate a child herbivore
-        Simulation.Instance.GenerateAnimal(Simulation.Instance.herbivore, pos, true);
+        Simulation.Instance.GenerateAnimal(true, pos);
         Simulation.Instance.herbivoreBorn++;
         
         //resetting mating datas;
