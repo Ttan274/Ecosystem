@@ -19,6 +19,7 @@ public class Animal : MonoBehaviour
 
     [Header("Animation")]
     [SerializeField] private string walkAnimation = "walk_forward";
+    [SerializeField] private string idleAnimation = "idle";
     private Animator animator;
 
     [Header("Hunger")]
@@ -60,6 +61,7 @@ public class Animal : MonoBehaviour
     //UI
     private AnimalUI animUI;
     private Color gizmoColor;
+
     public void Initialize(string aName, Gender g)
     {
         gizmoColor = Random.ColorHSV();
@@ -94,7 +96,10 @@ public class Animal : MonoBehaviour
                 break;
         }
 
-        if(isInfected)
+        if (animator != null)
+            animator.SetBool("Move", state != AnimalState.Idle);
+
+        if (isInfected)
             Die(infectionDamage);
     }
 
@@ -161,7 +166,11 @@ public class Animal : MonoBehaviour
     protected void RandomTarget()
     {
         Tile current = Pathfinder.Instance.GetTileAtPosition(transform.position);
-        if (current == null) return;
+        if (current == null)
+        {
+            Debug.Log("Naber01");
+            return;
+        }
 
         bool canWalk = false;
         while (!canWalk)
@@ -170,8 +179,8 @@ public class Animal : MonoBehaviour
             int pZ = current.z + Random.Range(-Mathf.RoundToInt(randomWalkRange), Mathf.RoundToInt(randomWalkRange));
 
             Tile destination = Pathfinder.Instance.GetTileGrid(pX, pZ);
-            if (destination == null)
-                destination = current;
+            if(destination == null || destination.IsWalkable() == false)
+                state = AnimalState.Idle;
 
             if (destination != null && current != null && destination.IsWalkable())
             {
@@ -194,6 +203,8 @@ public class Animal : MonoBehaviour
         if (currentPath == null || pathIndex >= currentPath.Count) return;
 
         Vector3 targetPos = currentPath[pathIndex].transform.position;
+        if (targetPos == null)
+            Debug.Log("Naber03");
         float dist = Vector3.Distance(transform.position, targetPos);
 
         if (dist <= tileTolerance)
@@ -206,8 +217,6 @@ public class Animal : MonoBehaviour
     {
         Vector3 dir = (targetPos - transform.position).normalized;
         transform.position += dir * moveSpeed * Time.deltaTime;
-        if(animator != null)
-            animator.Play(walkAnimation);
         transform.LookAt(new Vector3(targetPos.x, transform.position.y, targetPos.z));
     }
 

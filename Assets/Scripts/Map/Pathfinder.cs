@@ -127,7 +127,9 @@ public class Pathfinder : MonoBehaviour
     public Tile GetTileGrid(int pX, int pZ)
     {
         if (IsInsideMap(pX, pZ))
-             return tiles[pX, pZ];
+        {
+            return tiles[pX, pZ];
+        }
         return null;
     }
 

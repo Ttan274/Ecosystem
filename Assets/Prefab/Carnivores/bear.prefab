@@ -2133,10 +2133,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
-  moveSpeed: 4
+  moveSpeed: 3
   tileTolerance: 0.2
   randomWalkRange: 8
   walkAnimation: Bear_WalkForward
+  idleAnimation: Bear_Idle
   hungerDecayRate: 1
   hungerThreshold: 50
   eatDistance: 0.5
