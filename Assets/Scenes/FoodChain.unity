@@ -5527,7 +5527,7 @@ MonoBehaviour:
     type: 0
     maxCount: 12
     spawnChance: 0.2
-    prefab: {fileID: 3263543710985375440, guid: 17a95c7ef024655428f27a1bc6bec79e, type: 3}
+    prefab: {fileID: 3392178278674746791, guid: 17a95c7ef024655428f27a1bc6bec79e, type: 3}
   bush:
     type: 1
     maxCount: 20
@@ -5927,7 +5927,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sheep: {fileID: 4138016188688186657, guid: dd15289c6f95e3b4f8f9f29e86b0309e, type: 3}
   goat: {fileID: 3048717594317333059, guid: d6882eccc6f7cde49bac9b7e3c244705, type: 3}
-  carnivore: {fileID: 7439349190109868529, guid: 32ab39f2e3089474f856e40591cf3cb6, type: 3}
+  carnivore: {fileID: 5994896448880089813, guid: af5b6f32fd8ef3448abe0462880fc134, type: 3}
   IsDroughtEnabled: 0
   carnivores: []
   herbivores: []

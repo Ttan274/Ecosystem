@@ -60,12 +60,6 @@ public class Animal : MonoBehaviour
     //UI
     private AnimalUI animUI;
     private Color gizmoColor;
-
-    private void Awake()
-    {
-        Initialize("slm", Gender.Male);
-    }
-
     public void Initialize(string aName, Gender g)
     {
         gizmoColor = Random.ColorHSV();

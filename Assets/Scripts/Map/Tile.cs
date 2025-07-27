@@ -34,7 +34,7 @@ public class Tile : MonoBehaviour
     {
         if (hasTree) return;
 
-        Place(treePrefab, 0.5f);
+        Place(treePrefab, 0);
         hasTree = true;
     }
 
