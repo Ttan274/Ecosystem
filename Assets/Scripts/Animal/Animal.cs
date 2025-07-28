@@ -17,9 +17,7 @@ public class Animal : MonoBehaviour
     private int pathIndex = 0;
     protected List<Tile> currentPath = new List<Tile>();
 
-    [Header("Animation")]
-    [SerializeField] private string walkAnimation = "walk_forward";
-    [SerializeField] private string idleAnimation = "idle";
+    //Animator
     private Animator animator;
 
     [Header("Hunger")]
@@ -53,6 +51,7 @@ public class Animal : MonoBehaviour
                                     && currentThirst >= 100f * matingThreshold;
 
     [Header("Health")]
+    [SerializeField] private Color infectedColor = Color.green;
     [SerializeField] private float infectionDamage;
     [SerializeField] private float needsDamage;
     private float currentHealth;
@@ -168,7 +167,7 @@ public class Animal : MonoBehaviour
         Tile current = Pathfinder.Instance.GetTileAtPosition(transform.position);
         if (current == null)
         {
-            Debug.Log("Naber01");
+            Debug.Log("Naber02");
             return;
         }
 
@@ -192,6 +191,9 @@ public class Animal : MonoBehaviour
 
     protected void WalkRandomly()
     {
+        if (currentPath == null)
+            return;
+
         if (currentPath.Count == 0 || pathIndex >= currentPath.Count)
             RandomTarget();
         else
@@ -289,18 +291,19 @@ public class Animal : MonoBehaviour
     
     private IEnumerator InfectionBehaviour()
     {
-        var renderer = GetComponent<MeshRenderer>();
-        Color defaultColor = renderer.material.color;
+        var renderers = GetComponentsInChildren<SkinnedMeshRenderer>();
+        Material mat = renderers[0].material;
+        Color defaultColor = mat.color;
 
         while (isInfected)
         {
+            yield return new WaitForSeconds(0.4f);
+            foreach (var rend in renderers)
+                rend.material.color = infectedColor;
             yield return new WaitForSeconds(0.2f);
-            renderer.material.color = Color.green;
-            yield return new WaitForSeconds(0.2f);
-            renderer.material.color = defaultColor;
+            foreach (var rend in renderers)
+                rend.material.color = defaultColor;
         }
-
-        renderer.material.color = defaultColor;
     }
     #endregion
     

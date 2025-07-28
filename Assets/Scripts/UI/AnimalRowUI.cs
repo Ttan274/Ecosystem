@@ -7,6 +7,7 @@ public class AnimalRowUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI nameTxt;
     [SerializeField] private TextMeshProUGUI genderTxt;
     [SerializeField] private TextMeshProUGUI stateTxt;
+    [SerializeField] private TextMeshProUGUI ageTxt;
     private Animal animal;
 
     public void SetData(int index, Animal a)

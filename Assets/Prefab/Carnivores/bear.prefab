@@ -2133,11 +2133,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
-  moveSpeed: 3
+  moveSpeed: 2.3
   tileTolerance: 0.2
   randomWalkRange: 8
-  walkAnimation: Bear_WalkForward
-  idleAnimation: Bear_Idle
   hungerDecayRate: 1
   hungerThreshold: 50
   eatDistance: 0.5
@@ -2149,6 +2147,7 @@ MonoBehaviour:
   matingCooldown: 10
   matingThreshold: 0.7
   matingDistance: 3
+  infectedColor: {r: 0.8773585, g: 0.1779548, b: 0.7158103, a: 1}
   infectionDamage: 10
   needsDamage: 5
   checkPrey: 1.2
@@ -2796,7 +2795,7 @@ GameObject:
   - component: {fileID: 2480352290533715429}
   - component: {fileID: 8932243277016767926}
   m_Layer: 8
-  m_Name: Cube
+  m_Name: MinimapMP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2811,8 +2810,8 @@ Transform:
   m_GameObject: {fileID: 8431953369934927530}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 0.05, z: 1}
+  m_LocalPosition: {x: 0, y: 0.1, z: 0}
+  m_LocalScale: {x: 1.4, y: 0.05, z: 1.4}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6764467706563385452}

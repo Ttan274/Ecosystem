@@ -1821,11 +1821,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
-  moveSpeed: 2.5
+  moveSpeed: 2
   tileTolerance: 0.1
   randomWalkRange: 8
-  walkAnimation: walk_forward
-  idleAnimation: idle
   hungerDecayRate: 2.5
   hungerThreshold: 50
   eatDistance: 0.5
@@ -1837,6 +1835,7 @@ MonoBehaviour:
   matingCooldown: 10
   matingThreshold: 0.7
   matingDistance: 3
+  infectedColor: {r: 0.14901961, g: 0.9372549, b: 0.015686275, a: 1}
   infectionDamage: 10
   needsDamage: 5
 --- !u!1 &3241888571407823840

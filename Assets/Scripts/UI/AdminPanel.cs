@@ -1,4 +1,6 @@
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AdminPanel : MonoBehaviour
 {
@@ -6,6 +8,9 @@ public class AdminPanel : MonoBehaviour
     [SerializeField] private Transform animalTable;
 
     [SerializeField] private Camera minimapCam;
+    [SerializeField] private Slider minimapSlider;
+    [SerializeField] private TextMeshProUGUI minimapTxt;
+    private float minimapMovementAmount = 1f;
 
     public void ShowHerbivores()
     {
@@ -42,22 +47,22 @@ public class AdminPanel : MonoBehaviour
         switch ((MinimapMovement)movementDir)
         {
             case MinimapMovement.MoveLeft:
-                dir = Vector3.left;
+                dir = Vector3.left * minimapMovementAmount;
                 break;
             case MinimapMovement.MoveRight:
-                dir = Vector3.right;
+                dir = Vector3.right * minimapMovementAmount;
                 break;
             case MinimapMovement.MoveUp:
-                dir = Vector3.forward;
+                dir = Vector3.forward * minimapMovementAmount;
                 break;
             case MinimapMovement.MoveDown:
-                dir = Vector3.back;
+                dir = Vector3.back * minimapMovementAmount;
                 break;
             case MinimapMovement.ZoomIn:
-                minimapCam.orthographicSize = Mathf.Max(7, minimapCam.orthographicSize - 1);
+                minimapCam.orthographicSize = Mathf.Max(7, minimapCam.orthographicSize - minimapMovementAmount);
                 break;
             case MinimapMovement.ZoomOut:
-                minimapCam.orthographicSize = Mathf.Min(20, minimapCam.orthographicSize + 1);
+                minimapCam.orthographicSize = Mathf.Min(25, minimapCam.orthographicSize + minimapMovementAmount);
                 break;
             default:
                 Debug.Log("No movement method like this");
@@ -71,10 +76,16 @@ public class AdminPanel : MonoBehaviour
         minimapCam.transform.position += dir;
 
         minimapCam.transform.position = new Vector3(
-            Mathf.Clamp(minimapCam.transform.position.x, 0f, 40f),
+            Mathf.Clamp(minimapCam.transform.position.x, 10f, 50f),
             minimapCam.transform.position.y,
-            Mathf.Clamp(minimapCam.transform.position.z, 0f, 40f)
+            Mathf.Clamp(minimapCam.transform.position.z, 10f, 50f)
         );
+    }
+
+    public void ChangeMinimapMovementAmount()
+    {
+        minimapMovementAmount = minimapSlider.value;
+        minimapTxt.text = "Move Amount : " + minimapMovementAmount.ToString();
     }
 }
 
