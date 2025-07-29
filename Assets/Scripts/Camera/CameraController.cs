@@ -129,6 +129,8 @@ public class CameraController : MonoBehaviour
     #endregion 
 
     #region Utility Methods
+    public void ChangeCamActiveness(bool x) => camActive = x;
+
     private void UpdateCameraMode()
     {
         switch (mode)

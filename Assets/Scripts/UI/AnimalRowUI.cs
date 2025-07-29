@@ -14,6 +14,7 @@ public class AnimalRowUI : MonoBehaviour
     {
         idTxt.text = index.ToString();
         animal = a;
+        ageTxt.text = "Adult";
     }
 
     private void Update()
