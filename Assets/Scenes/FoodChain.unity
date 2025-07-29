@@ -226,14 +226,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mode: 0
-  switchKey: 0
+  switchKey: 9
   terrain: {fileID: 0}
   rotAxis: {x: 0, y: 1, z: 0}
   rotSpeed: 10
-  speed: 100
-  speedMultiplier: 250
-  maxSpeed: 1000
+  speed: 25
+  speedMultiplier: 50
+  maxSpeed: 100
   sensivity: 0.25
+  mouseSpeed: 10
 --- !u!114 &7728730
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour
@@ -24,6 +23,7 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float speedMultiplier = 250f;
     [SerializeField] private float maxSpeed = 1000f;
     [SerializeField] private float sensivity = 0.25f;
+    [SerializeField] private float mouseSpeed = 0.1f;
 
     private Vector3 lastMousePos = new Vector3(255, 255, 255);
     private float totalMultiplied = 1f;
@@ -40,11 +40,7 @@ public class CameraController : MonoBehaviour
     #region CameraMode Methods
     private void UpdateFlyBehaviour()
     {
-        lastMousePos = Input.mousePosition - lastMousePos;
-        lastMousePos = new Vector3(-lastMousePos.y * sensivity, lastMousePos.x * sensivity, 0);
-        lastMousePos = new Vector3(transform.eulerAngles.x + lastMousePos.x, transform.eulerAngles.y + lastMousePos.y, 0);
-        transform.eulerAngles = lastMousePos;
-        lastMousePos = Input.mousePosition;
+        MouseInput();
 
         Vector3 inputAxes = GetBaseInput();
         if(Input.GetKey(KeyCode.LeftShift))
@@ -63,6 +59,7 @@ public class CameraController : MonoBehaviour
 
         inputAxes = inputAxes * Time.unscaledDeltaTime;
         Vector3 newPos = transform.position;
+        /*
         if(Input.GetKey(KeyCode.Space))
         {
             transform.Translate(inputAxes);
@@ -71,9 +68,9 @@ public class CameraController : MonoBehaviour
             transform.position = newPos;
         }
         else
-        {
-            transform.Translate(inputAxes);
-        }
+        {*/
+        transform.Translate(inputAxes);
+        //}
     }
 
     private void UpdateFollowCamera()
@@ -100,7 +97,7 @@ public class CameraController : MonoBehaviour
             {
                 case CameraMode.Orbit:
                     mode = CameraMode.Fly;
-                    CursorBehaviour(false);
+                    CursorBehaviour(true);
                     break;
                 case CameraMode.Fly:
                     mode = CameraMode.Orbit;
@@ -126,6 +123,26 @@ public class CameraController : MonoBehaviour
             vel += new Vector3(1, 0, 0);
         return vel;
     }
+
+    private void MouseInput()
+    {
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            lastMousePos = Input.mousePosition;
+        }
+
+        if (Input.GetKey(KeyCode.Mouse0))
+        {
+            Vector3 delta = Input.mousePosition - lastMousePos;
+            float rotationX = -delta.y * sensivity * mouseSpeed * Time.deltaTime;
+            float rotationY = delta.x * sensivity * mouseSpeed * Time.deltaTime;
+
+            transform.eulerAngles += new Vector3(rotationX, rotationY, 0f);
+
+            lastMousePos = Input.mousePosition;
+        }
+    }
+
     #endregion 
 
     #region Utility Methods
