@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class CameraController : MonoBehaviour
 {
@@ -29,6 +31,7 @@ public class CameraController : MonoBehaviour
     private float totalMultiplied = 1f;
     private Transform focusPoint;
     private bool camActive = false;
+    public static UnityAction<string> OnCamModeChange;
 
     private void Update()
     {
@@ -97,10 +100,12 @@ public class CameraController : MonoBehaviour
             {
                 case CameraMode.Orbit:
                     mode = CameraMode.Fly;
+                    OnCamModeChange?.Invoke(mode.ToString());
                     CursorBehaviour(true);
                     break;
                 case CameraMode.Fly:
                     mode = CameraMode.Orbit;
+                    OnCamModeChange?.Invoke(mode.ToString());
                     CursorBehaviour(true);
                     break;
                 default:

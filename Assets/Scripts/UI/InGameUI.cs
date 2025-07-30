@@ -12,11 +12,22 @@ public class InGameUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI droughtTxt;
     private bool isDroughtActive = false;
 
+    [Header("Extra Info")]
+    [SerializeField] private TextMeshProUGUI camModeTxt;
+
     private void Awake()
     {
         timeS = Time.timeScale;
         SetSpeedText();
+        CameraController.OnCamModeChange += ChangeCamMode;
     }
+
+    private void OnDestroy()
+    {
+        CameraController.OnCamModeChange -= ChangeCamMode;
+    }
+
+    private void ChangeCamMode(string txt) => camModeTxt.text = "Camera Mode : " + txt;
 
     #region Simulation Control Region
     public void CreateHerbivore(TMP_InputField field)

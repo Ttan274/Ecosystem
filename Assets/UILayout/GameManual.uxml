@@ -1,0 +1,17 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UILayout/GameManual.uss?fileID=7433441132597879392&amp;guid=d7dec11950a705243b90f4b7e34a7a49&amp;type=3#GameManual" />
+    <ui:VisualElement name="Root" style="flex-grow: 1; justify-content: center; align-items: center;">
+        <ui:VisualElement name="ManualPanel" class="manual-panel">
+            <ui:Label name="Title" text="Game Manual" class="manual-title" />
+            <ui:VisualElement class="tabs">
+                <ui:Button name="CameraTab" text="Camera" class="tab-button" />
+                <ui:Button name="PanelTab" text="Panel" class="tab-button"/>
+                <ui:Button name="AdminTab" text="Admin" class="tab-button"/>
+            </ui:VisualElement>
+            <ui:ScrollView name="ContentScroll" class="manual-content">
+                <ui:Label name="ContentLabel" text="Select a section..." />
+            </ui:ScrollView>
+            <ui:Button name="CloseButton" text="Close" class="manual-close" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

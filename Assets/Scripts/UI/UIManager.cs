@@ -31,6 +31,7 @@ public class UIManager : MonoBehaviour
             isPauseMenuActive = !isPauseMenuActive;
             inGamePanel.SetActive(!isPauseMenuActive);
             pauseMenu.SetActive(isPauseMenuActive);
+            pauseMenu.GetComponent<GameManual>().OpenManual();
             cam.ChangeCamActiveness(!isPauseMenuActive);
             ChangeGameSpeed(isPauseMenuActive);
         }
