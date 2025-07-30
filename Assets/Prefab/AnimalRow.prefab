@@ -284,12 +284,12 @@ GameObject:
   - component: {fileID: 8043890114547269834}
   - component: {fileID: 3002868967543562395}
   m_Layer: 5
-  m_Name: Age
+  m_Name: DiseaseTxt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &4141393097398037022
 RectTransform:
   m_ObjectHideFlags: 0
@@ -304,10 +304,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 2709564281686944447}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 650, y: -25}
-  m_SizeDelta: {x: 160, y: 50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &8043890114547269834
 CanvasRenderer:
@@ -337,7 +337,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Baby
+  m_text: Healthy
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -466,7 +466,7 @@ MonoBehaviour:
   nameTxt: {fileID: 6237935352367361304}
   genderTxt: {fileID: 6036338328984189980}
   stateTxt: {fileID: 6635926950839715104}
-  ageTxt: {fileID: 3002868967543562395}
+  diseaseTxt: {fileID: 3002868967543562395}
 --- !u!114 &5394993564822562143
 MonoBehaviour:
   m_ObjectHideFlags: 0

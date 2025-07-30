@@ -3,6 +3,7 @@ using UnityEngine.UIElements;
 
 public class GameManual : MonoBehaviour
 {
+    [SerializeField] private GameObject pauseMenu;
     private VisualElement manualPanel;
     private Label contentLabel;
 
@@ -16,7 +17,7 @@ public class GameManual : MonoBehaviour
         root.Q<Button>("CameraTab").clicked += () => ShowSection("Camera");
         root.Q<Button>("PanelTab").clicked += () => ShowSection("Panel");
         root.Q<Button>("AdminTab").clicked += () => ShowSection("Admin");
-        root.Q<Button>("CloseButton").clicked += () => manualPanel.style.display = DisplayStyle.None;
+        root.Q<Button>("CloseButton").clicked += () => CloseManual();
 
         // Optional: open default
         manualPanel.style.display = DisplayStyle.None;
@@ -42,5 +43,12 @@ public class GameManual : MonoBehaviour
     {
         manualPanel.style.display = DisplayStyle.Flex;
         ShowSection("Camera");
+    }
+
+    private void CloseManual()
+    {
+        manualPanel.style.display = DisplayStyle.None;
+        gameObject.SetActive(false);
+        pauseMenu.SetActive(true);
     }
 }

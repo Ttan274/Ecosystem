@@ -12,6 +12,7 @@ public class AdminPanel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI minimapTxt;
     private float minimapMovementAmount = 1f;
 
+    #region List Animals region
     public void ShowHerbivores()
     {
         ClearTable();
@@ -40,7 +41,9 @@ public class AdminPanel : MonoBehaviour
         AnimalRowUI rowUI = row.GetComponent<AnimalRowUI>();
         rowUI.SetData(index, animal);
     }
+    #endregion
 
+    #region Minimap Movemnt Region
     public void MoveMinimap(int movementDir)
     {
         Vector3 dir = Vector3.zero;
@@ -87,6 +90,7 @@ public class AdminPanel : MonoBehaviour
         minimapMovementAmount = minimapSlider.value;
         minimapTxt.text = "Move Amount : " + minimapMovementAmount.ToString();
     }
+    #endregion
 }
 
 public enum MinimapMovement

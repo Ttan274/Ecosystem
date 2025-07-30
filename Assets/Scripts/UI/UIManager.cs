@@ -2,9 +2,12 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
+    [Header("UI Panels")]
     [SerializeField] private GameObject inGamePanel;
     [SerializeField] private AdminPanel adminPanel;
     [SerializeField] private GameObject pauseMenu;
+    
+    //Others
     private CanvasGroup adminPanelCanvas;
     private bool isAdminPanelActive = false;
     private bool isPauseMenuActive = false;
@@ -20,21 +23,26 @@ public class UIManager : MonoBehaviour
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.M) && !isPauseMenuActive)
-        {
-            isAdminPanelActive = !isAdminPanelActive;
-            inGamePanel.SetActive(!isAdminPanelActive);
-            adminPanelCanvas.alpha = isAdminPanelActive ? 1 : 0;
-        }
+            AdminPanelStatus();
 
         if(Input.GetKeyDown(KeyCode.P) && !isAdminPanelActive)
-        {
-            isPauseMenuActive = !isPauseMenuActive;
-            inGamePanel.SetActive(!isPauseMenuActive);
-            pauseMenu.SetActive(isPauseMenuActive);
-            pauseMenu.GetComponent<GameManual>().OpenManual();
-            cam.ChangeCamActiveness(!isPauseMenuActive);
-            ChangeGameSpeed(isPauseMenuActive);
-        }
+            PausePanelStatus();
+    }
+
+    private void AdminPanelStatus()
+    {
+        isAdminPanelActive = !isAdminPanelActive;
+        inGamePanel.SetActive(!isAdminPanelActive);
+        adminPanelCanvas.alpha = isAdminPanelActive ? 1 : 0;
+    }
+
+    public void PausePanelStatus()
+    {
+        isPauseMenuActive = !isPauseMenuActive;
+        inGamePanel.SetActive(!isPauseMenuActive);
+        pauseMenu.SetActive(isPauseMenuActive);
+        cam.ChangeCamActiveness(!isPauseMenuActive);
+        ChangeGameSpeed(isPauseMenuActive);
     }
 
     private void ChangeGameSpeed(bool isStopped)
