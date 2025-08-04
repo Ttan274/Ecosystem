@@ -37,7 +37,7 @@ public class SimulationStats : MonoBehaviour
         history.Add(data);
     }
 
-    public void ExportToCSV(string fileName = "SimStats.csv")
+    private void ExportToCSV(string fileName = "SimStats.csv")
     {
         StringBuilder csv = new StringBuilder();
         csv.AppendLine("Time,DroughtTimer,DiseaseApplied,Herbivores,HerbivoreEaten,HerbivoreBorn,Carnivores,CarnivoreBorn,PlantsEaten,PlantsRegrow");
@@ -49,6 +49,14 @@ public class SimulationStats : MonoBehaviour
 
         string path = Path.Combine(Application.dataPath, fileName);
         File.WriteAllText(path, csv.ToString());
+        Debug.Log($"Simulation data exported to {path}");
+    }
+
+    public void ExportToJSON(string fileName = "SimStats.json")
+    {
+        string json = JsonUtility.ToJson(new Wrapper { data = history}, true);
+        string path = Path.Combine(Application.persistentDataPath, fileName);
+        File.WriteAllText(path, json);
         Debug.Log($"Simulation data exported to {path}");
     }
 }
@@ -71,4 +79,10 @@ public class SimulationData
 
     public int plantsEaten;
     public int plantsRegrow;
+}
+
+[System.Serializable]
+public class Wrapper
+{
+    public List<SimulationData> data;
 }
