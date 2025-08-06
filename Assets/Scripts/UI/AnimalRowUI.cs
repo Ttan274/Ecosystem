@@ -12,7 +12,7 @@ public class AnimalRowUI : MonoBehaviour
 
     public void SetData(int index, Animal a)
     {
-        idTxt.text = index.ToString();
+        idTxt.text = a.Id.ToString();
         animal = a;
     }
 

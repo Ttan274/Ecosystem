@@ -32,14 +32,14 @@ public class InGameUI : MonoBehaviour
     #region Simulation Control Region
     public void CreateHerbivore(TMP_InputField field)
     {
-       if(CanCreateEntity(field, out int size))
-            Simulation.Instance.GenerateInitialAnimals(true, size);
+        if (CanCreateEntity(field, out int size))
+            SpawnManager.Instance.GenerateAnimals(true, size);
     }
 
     public void CreateCarnivore(TMP_InputField field)
     {
         if (CanCreateEntity(field, out int size))
-            Simulation.Instance.GenerateInitialAnimals(false, size);
+            SpawnManager.Instance.GenerateAnimals(false, size);
     }
 
     public void CreatePlant(TMP_InputField field)

@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 public class Carnivore : Animal
@@ -46,7 +47,7 @@ public class Carnivore : Animal
 
     protected override void FindFood()
     {
-        Herbivore[] herbivores = FindObjectsByType<Herbivore>(FindObjectsSortMode.None);
+        Herbivore[] herbivores = FindObjectsByType<Herbivore>(FindObjectsSortMode.None).Where(x => x.gameObject.activeInHierarchy).ToArray();
 
         if (herbivores.Length <= 0)
         {
@@ -74,6 +75,7 @@ public class Carnivore : Animal
     {
         food.GetComponent<Herbivore>().GotEaten();
         base.Eat();
+        food = null;
     }
     #endregion
 
@@ -101,8 +103,9 @@ public class Carnivore : Animal
     private void Breed(Carnivore partner, Vector3 pos)
     {
         //Instantiate a child herbivore
-        Simulation.Instance.GenerateAnimal(false, pos);
-        Simulation.Instance.carnivoreBorn++;
+        SpawnManager.Instance.GenerateAnimal(false, pos);
+        childCount++;
+        partner.childCount++;
 
         //resetting mating datas;
         matingTimer = 0;

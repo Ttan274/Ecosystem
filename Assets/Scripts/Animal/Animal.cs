@@ -5,9 +5,13 @@ using UnityEngine;
 public class Animal : MonoBehaviour
 {
     [Header("Identity")]
+    public int Id { get; private set; }
+    private static int globalId = 0;
     public Gender gender {get; private set;}
     public string animalName { get; private set;}
     public AnimalState status => state;
+    public int childCount { get; protected set; } = 0;
+    public int eatenObjectCount { get; protected set; } = 0;
 
     [Header("Movement")]
     [SerializeField] protected AnimalState state = AnimalState.Idle;
@@ -71,6 +75,7 @@ public class Animal : MonoBehaviour
         currentThirst = 100f;
         currentHealth = 100f;
 
+        Id = globalId++;
         animalName = aName;
         gameObject.name = animalName;
         gender = g;
@@ -239,6 +244,7 @@ public class Animal : MonoBehaviour
         currentPath.Clear();
         currentHunger = 100f;
         state = AnimalState.Wander;
+        eatenObjectCount++;
         canSearchFood = false;
     }
    
@@ -270,7 +276,8 @@ public class Animal : MonoBehaviour
         if(directDead)
         {
             Simulation.Instance.RemoveAnimal(this);
-            Destroy(gameObject);
+            gameObject.SetActive(false);
+            //Destroy(gameObject);
         }
         else
         {
@@ -278,7 +285,8 @@ public class Animal : MonoBehaviour
             if (currentHealth <= 0)
             {
                 Simulation.Instance.RemoveAnimal(this);
-                Destroy(gameObject);
+                gameObject.SetActive(false);
+                //Destroy(gameObject);
             }
         }
     }

@@ -93,8 +93,9 @@ public class Herbivore : Animal
     private void Breed(Herbivore partner, Vector3 pos)
     {
         //Instantiate a child herbivore
-        Simulation.Instance.GenerateAnimal(true, pos);
-        Simulation.Instance.herbivoreBorn++;
+        SpawnManager.Instance.GenerateAnimal(true, pos);
+        childCount++;
+        partner.childCount++;
         
         //resetting mating datas;
         matingTimer = 0;
@@ -104,10 +105,6 @@ public class Herbivore : Animal
     }
     #endregion
 
-    //Helper method when eatg by carnivores
-    public void GotEaten()
-    {
-        Simulation.Instance.herbivoreEaten++;
-        Die(0f, true);
-    }
+    //Helper method when eaten by carnivores
+    public void GotEaten() => Die(0f, true);
 }

@@ -50,7 +50,7 @@ public class MapGen : MonoBehaviour
 
         //Initalizing Other Scripts
         Pathfinder.Instance.Initialize(tiles, width, height);
-        Simulation.Instance.Initialize(ShuffleGroundTiles());
+        SpawnManager.Instance.Initialize(ShuffleGroundTiles());
         Camera.main.GetComponent<CameraController>().SetFocusPoint(tiles[width / 2, height / 2].transform);
     }
 
@@ -151,7 +151,7 @@ public class MapGen : MonoBehaviour
     #endregion
 
     #region Utility Methods
-    private List<Tile> ShuffleGroundTiles()
+    public List<Tile> ShuffleGroundTiles()
     {
         List<Tile> groundTiles = new List<Tile>();
         for (int x = 0; x < width; x++)

@@ -3,34 +3,21 @@ using UnityEngine;
 
 public class Simulation : MonoBehaviour
 {
-    [Header("Entity Details")]
-    public GameObject sheep;
-    public GameObject goat;
-    public GameObject carnivore;
-    public bool IsDroughtEnabled = false;
+    [Header("Simulation Data")]
+    [SerializeField] private float interval;
+    private float timer = 0f;
 
-    public List<Carnivore> carnivores = new List<Carnivore>();
-    public List<Herbivore> herbivores = new List<Herbivore>();
-    public int carnivoreCount => carnivores.Count;
-    public int herbivoreCount => herbivores.Count;
-    public bool canCreateHerbivore => herbivoreCount < 25;
-    public bool canCreateCarnivore => carnivoreCount < 15;
-    public int totalAnimals => carnivoreCount + herbivoreCount;
-    
-    [HideInInspector] public int plantsEaten = 0;
-    [HideInInspector] public int plantsRegrow = 0;
-    [HideInInspector] public int herbivoreEaten = 0;
-    [HideInInspector] public int herbivoreBorn = 0;
-    [HideInInspector] public int carnivoreBorn = 0;
+    //Admin Related Data
     [HideInInspector] public int diseaseApplied = 0;
     [HideInInspector] public float droughtTimer = 0f;
+    public bool IsDroughtEnabled { get; private set; } = false;
 
-    //References
-    [SerializeField]private List<string> animalNames = new List<string>() { "John", "Lucia", "Maxvel", "Naber", "Hello", "Wikwik", "Susangus", "Naber" };
-    private List<Tile> tiles = new List<Tile>();
+    [Header("Holders")]
+    public List<Carnivore> carnivores = new List<Carnivore>();
+    public List<Herbivore> herbivores = new List<Herbivore>();
+    private HashSet<int> addedAnimals = new HashSet<int>();
+    public List<SimulationData> history { get; private set; }
     public static Simulation Instance;
-
-    public void Initialize(List<Tile> tiles) => this.tiles = tiles;
 
     private void Awake()
     {
@@ -41,81 +28,28 @@ public class Simulation : MonoBehaviour
         }
 
         Instance = this;
+        history = new();
     }
 
     private void Update()
     {
         if (IsDroughtEnabled)
             droughtTimer += Time.deltaTime;
+
+        timer += Time.deltaTime;
+        if (timer >= interval)
+            RecordData();
     }
 
-    #region Generation Methods
-    public void GenerateInitialAnimals(bool isHerbivore, int count)
+    #region Registeration Methods
+    public void RegisterAnimal(Animal animal)
     {
-        if (!canCreateHerbivore || !canCreateCarnivore)
-            return;
-
-        for (int i = 0; i < count; i++)
-        {
-            Tile place = tiles[Random.Range(0, tiles.Count)];
-            tiles.Remove(place);
-            Gender gender = (i % 2 == 0) ? Gender.Male : Gender.Female;
-            GenerateAnimal(isHerbivore, place.transform.position, gender);
-        }
-    }
-
-    public void GenerateAnimal(bool isHerbivore, Vector3 spawnPos, Gender gen = Gender.Unknown)
-    {
-        if (!canCreateHerbivore || !canCreateCarnivore)
-            return;
-
-        //Setting up the gender and prefab for the animal
-        Gender gender = GenGenderForAnimal(gen);
-        GameObject animalPrefab = GetAnimalPrefab(isHerbivore, gender);
-
-        //Spawning the animal
-        Vector3 pos = spawnPos + new Vector3(0, 0.5f, 0);
-        Animal g = Instantiate(animalPrefab, pos, Quaternion.identity, transform).GetComponent<Animal>();
-        g.Initialize(GetNameForAnimal(), gender);
-
-        //Listing the animal
-        if (isHerbivore)
-            herbivores.Add(g as Herbivore);
+        if (animal is Herbivore)
+            herbivores.Add(animal as Herbivore);
         else
-            carnivores.Add(g as Carnivore);
-    }
-    #endregion
-
-    #region Utility Methods
-    private Gender GenGenderForAnimal(Gender gen)
-    {
-        Gender gender;
-        if (gen != Gender.Unknown)
-            gender = gen;
-        else
-            gender = (Random.value < 0.5f) ? Gender.Male : Gender.Female;
-
-        return gender;
+            carnivores.Add(animal as Carnivore);
     }
 
-    private string GetNameForAnimal()
-    {
-        int rand = Random.Range(0, animalNames.Count);
-        string n = animalNames[rand] + "-" + Random.Range(0, 99);
-        animalNames.Remove(n);
-        return n;
-    }
-
-    private GameObject GetAnimalPrefab(bool isHerbivore, Gender gender)
-    {
-        GameObject animalPrefab = null;
-        if (isHerbivore)
-            animalPrefab = (gender == Gender.Male) ? goat : sheep;
-        else 
-            animalPrefab = carnivore;
-        return animalPrefab;
-    }
-    
     public void RemoveAnimal(Animal animal)
     {
         if (animal is Herbivore)
@@ -143,30 +77,76 @@ public class Simulation : MonoBehaviour
             if (!carnivores[rand].isInfected)
                 carnivores[rand].Infect();
         }
+
+        diseaseApplied++;
     }
 
     public void StartDrought(bool status) => IsDroughtEnabled = status;
     #endregion
 
-    public SimulationData GetRecord()
+    #region Data region
+    private void RecordData()
     {
+        timer = 0f;
+
         var data = new SimulationData
         {
             time = Time.time,
             droughtTimer = droughtTimer,
             diseaseApplied = diseaseApplied,
-
-            herbivores = herbivoreCount,
-            herbivoreEaten = herbivoreEaten,
-            herbivoreBorn = herbivoreBorn,
-
-            carnivores = carnivoreCount,
-            carnivoreBorn = carnivoreBorn,
-
-            plantsEaten = plantsEaten,
-            plantsRegrow = plantsRegrow
+            herbivoreCount = herbivores.Count,
+            carnivoreCount = carnivores.Count,
         };
 
-        return data;
+        history.Add(data);
     }
+
+    public List<AnimalStats> GatherAnimalData(List<Animal> allAnimals)
+    {
+        var animalHistory = new List<AnimalStats>();
+
+        foreach (var animal in allAnimals)
+        {
+            if (addedAnimals.Contains(animal.Id)) continue;
+
+            AnimalStats stat = new()
+            {
+                name = animal.animalName,
+                gender = animal.gender.ToString(),
+                deadType = "Not Defined",
+                age = 5,
+                eatenObjectCount = animal.eatenObjectCount,
+                childCount = animal.childCount,
+                type = animal is Herbivore ? "Herbivore" : "Carnivore"
+            };
+
+            addedAnimals.Add(animal.Id);
+            animalHistory.Add(stat);
+        }
+
+        return animalHistory;
+    }
+
+    /*Right now not necessary
+    private void ExportToCSV(string fileName = "SimStats.csv")
+    {
+        StringBuilder csv = new StringBuilder();
+        csv.AppendLine("Time,DroughtTimer,DiseaseApplied,Herbivores,HerbivoreEaten,HerbivoreBorn,Carnivores,CarnivoreBorn,PlantsEaten,PlantsRegrow");
+
+        foreach (var point in history)
+            csv.AppendLine($"{point.time:F2},{point.droughtTimer:F2},{point.diseaseApplied},{point.herbivores},{point.herbivoreEaten},{point.herbivoreEaten},{point.carnivores},{point.carnivoreBorn},{point.plantsEaten},{point.plantsRegrow}");
+
+        string path = Path.Combine(Application.dataPath, fileName);
+        File.WriteAllText(path, csv.ToString());
+        Debug.Log($"Simulation data exported to {path}");
+    }
+
+    public void ExportToJSON(string fileName = "SimStats.json")
+    {
+        string json = JsonUtility.ToJson(new Wrapper { data = history}, true);
+        string path = Path.Combine(Application.persistentDataPath, fileName);
+        File.WriteAllText(path, json);
+        Debug.Log($"Simulation data exported to {path}");
+    }*/
+    #endregion
 }
