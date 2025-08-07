@@ -9,6 +9,7 @@ public class Animal : MonoBehaviour
     private static int globalId = 0;
     public Gender gender {get; private set;}
     public string animalName { get; private set;}
+    public DeathType deathType { get; private set; } = DeathType.Alive;
     public AnimalState status => state;
     public int childCount { get; protected set; } = 0;
     public int eatenObjectCount { get; protected set; } = 0;
@@ -59,6 +60,7 @@ public class Animal : MonoBehaviour
     [SerializeField] private float infectionDamage;
     [SerializeField] private float needsDamage;
     private float currentHealth;
+    private bool isDead = false;
     public bool isInfected {get; private set;} = false;
     
     //UI
@@ -104,7 +106,7 @@ public class Animal : MonoBehaviour
             animator.SetBool("Move", state != AnimalState.Idle);
 
         if (isInfected)
-            Die(infectionDamage);
+            Die(infectionDamage, DeathType.Infection);
     }
 
     #region Needs
@@ -129,7 +131,7 @@ public class Animal : MonoBehaviour
             state = AnimalState.Wander;
 
         if (currentHunger <= 0 || currentThirst <= 0)
-            Die(needsDamage);
+            Die(needsDamage, DeathType.HungerORThirst);
 
         animUI.SetHunger(currentHunger, 100f);
         animUI.SetThirst(currentThirst, 100f);
@@ -271,12 +273,12 @@ public class Animal : MonoBehaviour
     #endregion
 
     #region Health
-    protected virtual void Die(float damage, bool directDead = false)
+    protected virtual void Die(float damage, DeathType d, bool directDead = false)
     {
         if(directDead)
         {
             Simulation.Instance.RemoveAnimal(this);
-            gameObject.SetActive(false);
+            isDead = true;
             //Destroy(gameObject);
         }
         else
@@ -285,9 +287,15 @@ public class Animal : MonoBehaviour
             if (currentHealth <= 0)
             {
                 Simulation.Instance.RemoveAnimal(this);
-                gameObject.SetActive(false);
+                isDead = true;
                 //Destroy(gameObject);
             }
+        }
+
+        if(isDead)
+        {
+            gameObject.SetActive(false);
+            deathType = d;
         }
     }
     
@@ -346,4 +354,12 @@ public enum Gender
     Unknown,
     Male,
     Female
+}
+
+public enum DeathType
+{
+    Alive,
+    Infection,
+    HungerORThirst,
+    Predator
 }

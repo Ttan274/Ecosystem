@@ -106,5 +106,5 @@ public class Herbivore : Animal
     #endregion
 
     //Helper method when eaten by carnivores
-    public void GotEaten() => Die(0f, true);
+    public void GotEaten() => Die(0f, DeathType.Predator, true);
 }

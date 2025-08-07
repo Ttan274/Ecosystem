@@ -113,7 +113,7 @@ public class Simulation : MonoBehaviour
             {
                 name = animal.animalName,
                 gender = animal.gender.ToString(),
-                deadType = "Not Defined",
+                deadType = animal.deathType.ToString(),
                 age = 5,
                 eatenObjectCount = animal.eatenObjectCount,
                 childCount = animal.childCount,
