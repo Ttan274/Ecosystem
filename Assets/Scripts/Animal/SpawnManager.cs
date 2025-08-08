@@ -11,7 +11,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private List<string> animalNames = new List<string>();
     
     //References
-    public List<Animal> animalList { get; private set; }
+    public List<Animal> animalList = new List<Animal>();
     public static SpawnManager Instance;
     private List<Tile> tiles = new List<Tile>();
 
@@ -24,7 +24,6 @@ public class SpawnManager : MonoBehaviour
         }
 
         Instance = this;
-        animalList = new List<Animal>();
     }
 
     public void Initialize(List<Tile> tiles) => this.tiles = tiles;

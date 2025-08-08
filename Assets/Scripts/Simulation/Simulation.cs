@@ -114,7 +114,7 @@ public class Simulation : MonoBehaviour
                 name = animal.animalName,
                 gender = animal.gender.ToString(),
                 deadType = animal.deathType.ToString(),
-                age = 5,
+                age = animal.age,
                 eatenObjectCount = animal.eatenObjectCount,
                 childCount = animal.childCount,
                 type = animal is Herbivore ? "Herbivore" : "Carnivore"

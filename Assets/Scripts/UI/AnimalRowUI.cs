@@ -7,7 +7,7 @@ public class AnimalRowUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI nameTxt;
     [SerializeField] private TextMeshProUGUI genderTxt;
     [SerializeField] private TextMeshProUGUI stateTxt;
-    [SerializeField] private TextMeshProUGUI diseaseTxt;
+    [SerializeField] private TextMeshProUGUI ageTxt;
     private Animal animal;
 
     public void SetData(int index, Animal a)
@@ -21,7 +21,7 @@ public class AnimalRowUI : MonoBehaviour
         if (animal == null) return;
         nameTxt.text = animal.animalName;
         genderTxt.text = animal.gender.ToString();
-        stateTxt.text = animal.status.ToString();
-        diseaseTxt.text = animal.isInfected ? "Infected" : "Healthy";
+        ageTxt.text = animal.age.ToString();
+        stateTxt.text = animal.state.ToString();
     }
 }

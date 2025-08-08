@@ -5,24 +5,26 @@ using UnityEngine;
 public class Animal : MonoBehaviour
 {
     [Header("Identity")]
-    public int Id { get; private set; }
     private static int globalId = 0;
+    public int Id { get; private set; }
     public Gender gender {get; private set;}
     public string animalName { get; private set;}
     public DeathType deathType { get; private set; } = DeathType.Alive;
-    public AnimalState status => state;
     public int childCount { get; protected set; } = 0;
     public int eatenObjectCount { get; protected set; } = 0;
+    
+    //Age
+    public int age { get; private set; } = 0;
+    private int maxAge;
+    private int nextAgeCounter = 0;
 
     [Header("Movement")]
-    [SerializeField] protected AnimalState state = AnimalState.Idle;
+    public AnimalState state = AnimalState.Idle;
     [SerializeField] private float moveSpeed;
     [SerializeField] private float tileTolerance;
     [SerializeField] private float randomWalkRange;
     private int pathIndex = 0;
     protected List<Tile> currentPath = new List<Tile>();
-
-    //Animator
     private Animator animator;
 
     [Header("Hunger")]
@@ -73,15 +75,23 @@ public class Animal : MonoBehaviour
         animUI = GetComponentInChildren<AnimalUI>();
         animator = GetComponent<Animator>();
 
+        //Starting value of animal datas
         currentHunger = 100f;
         currentThirst = 100f;
         currentHealth = 100f;
 
+        //Animal specific data
         Id = globalId++;
         animalName = aName;
         gameObject.name = animalName;
         gender = g;
+        maxAge = Random.Range(8, 15);
+        DayCycle.OnDayEnd += UpdateAge;
+
+        //Default UI Bar
         animUI.SetGenderBar(gender);
+        animUI.SetHunger(currentHunger, 100f);
+        animUI.SetThirst(currentThirst, 100f);
     }
 
     protected virtual void Update()
@@ -107,6 +117,9 @@ public class Animal : MonoBehaviour
 
         if (isInfected)
             Die(infectionDamage, DeathType.Infection);
+
+        if (age >= maxAge)
+            Die(0, DeathType.Age, true);
     }
 
     #region Needs
@@ -277,25 +290,20 @@ public class Animal : MonoBehaviour
     {
         if(directDead)
         {
-            Simulation.Instance.RemoveAnimal(this);
             isDead = true;
-            //Destroy(gameObject);
         }
         else
         {
             currentHealth -= damage * Time.deltaTime;
             if (currentHealth <= 0)
-            {
-                Simulation.Instance.RemoveAnimal(this);
                 isDead = true;
-                //Destroy(gameObject);
-            }
         }
 
         if(isDead)
         {
-            gameObject.SetActive(false);
+            Simulation.Instance.RemoveAnimal(this);
             deathType = d;
+            gameObject.SetActive(false);
         }
     }
     
@@ -322,7 +330,21 @@ public class Animal : MonoBehaviour
         }
     }
     #endregion
-    
+
+    protected void UpdateAge()
+    {
+        if (isDead)
+            return;
+
+        nextAgeCounter++;
+
+        if (nextAgeCounter > 3)
+        {
+            nextAgeCounter = 0;
+            age++;
+        }
+    }
+
     //debugging
     protected void OnDrawGizmos()
     {
@@ -361,5 +383,6 @@ public enum DeathType
     Alive,
     Infection,
     HungerORThirst,
-    Predator
+    Predator,
+    Age
 }
