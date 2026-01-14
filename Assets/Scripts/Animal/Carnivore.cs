@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine;
 
@@ -14,38 +15,34 @@ public class Carnivore : Animal
     }
 
     #region Food
-    protected override void FoodSearch()
+    public override void FindFood()
     {
         if (!canSearch)
-        {
-            //No food left for carnivores
-            return;
-        }
+            return;   //No food left for carnivores
 
-        if (food == null || checkTimer >= checkPrey)
+        if (food == null && checkTimer >= checkPrey)
         {
-            FindFood();
-            checkTimer = 0;
-        }
+            FindClosestFood();
 
-        if(food != null)
-        {
-            Tile current = Pathfinder.Instance.GetTileAtPosition(transform.position);
-            Tile destination = Pathfinder.Instance.GetTileAtPosition(food.transform.position);
-            SetPath(current, destination);
-
-            float distance = Vector3.Distance(transform.position, food.transform.position);
-            if(distance < eatDistance)
+            if(showDebug)
             {
-                Eat();
-                return;
+                Debug.Log(animalName + ":" + food.name);
             }
 
-            FollowPath();
+            checkTimer = 0;
+
+            if (food == null)
+                return;
+
+            Tile current = Pathfinder.Instance.GetTileAtPosition(transform.position);
+            Tile destination = Pathfinder.Instance.GetTileAtPosition(food.transform.position);
+
+            if (current != null && destination != null)
+                SetPath(current, destination);
         }
     }
 
-    protected override void FindFood()
+    private void FindClosestFood()
     {
         Herbivore[] herbivores = FindObjectsByType<Herbivore>(FindObjectsSortMode.None).Where(x => x.gameObject.activeInHierarchy).ToArray();
 
@@ -61,7 +58,7 @@ public class Carnivore : Animal
         foreach (Herbivore animal in herbivores)
         {
             float d = Vector3.Distance(transform.position, animal.transform.position);
-            if(d < closestDist)
+            if (d < closestDist)
             {
                 closestDist = d;
                 closest = animal;
@@ -71,7 +68,7 @@ public class Carnivore : Animal
         food = closest.gameObject;
     }
 
-    protected override void Eat()
+    public override void Eat()
     {
         food.GetComponent<Herbivore>().GotEaten();
         base.Eat();
@@ -80,38 +77,40 @@ public class Carnivore : Animal
     #endregion
 
     #region Mate
-    protected override void FindMate()
+    //public override void FindMate()
+    //{
+    //    Carnivore[] carnivores = FindObjectsByType<Carnivore>(FindObjectsSortMode.None);
+
+    //    foreach (Carnivore other in carnivores)
+    //    {
+    //        if (other == this || !other.IsReadyToMate || other.gender == this.gender || other.hasMate) continue;
+
+    //        float distance = Vector3.Distance(transform.position, other.transform.position);
+    //        if (distance <= matingDistance)
+    //        {
+    //            hasMate = true;
+    //            other.hasMate = true;
+    //            Vector3 pos = (this.gender == Gender.Female) ? this.transform.position : other.transform.position;
+    //            Breed(other, pos);
+    //            break;
+    //        }
+    //    }
+    //}
+
+    public override Animal FindClosestMate()
     {
-        Carnivore[] carnivores = FindObjectsByType<Carnivore>(FindObjectsSortMode.None);
-
-        foreach (Carnivore other in carnivores)
-        {
-            if (other == this || !other.IsReadyToMate || other.gender == this.gender || other.hasMate) continue;
-
-            float distance = Vector3.Distance(transform.position, other.transform.position);
-            if (distance <= matingDistance)
-            {
-                hasMate = true;
-                other.hasMate = true;
-                Vector3 pos = (this.gender == Gender.Female) ? this.transform.position : other.transform.position;
-                Breed(other, pos);
-                break;
-            }
-        }
+        return base.FindClosestMate();
     }
 
-    private void Breed(Carnivore partner, Vector3 pos)
+    public override void Breed()
     {
-        //Instantiate a child herbivore
-        SpawnManager.Instance.GenerateAnimal(false, pos);
         childCount++;
-        partner.childCount++;
-
-        //resetting mating datas;
         matingTimer = 0;
-        partner.matingTimer = 0;
-        hasMate = false;
-        partner.hasMate = false;
+
+        if (gender == Gender.Female)
+        {
+            SpawnManager.Instance.GenerateAnimal(false, transform.position);
+        }
     }
     #endregion
 }

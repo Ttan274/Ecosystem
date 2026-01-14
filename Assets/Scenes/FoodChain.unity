@@ -11596,6 +11596,7 @@ MonoBehaviour:
   - Whisper
   - Ember
   - Scales
+  animalList: []
 --- !u!1 &2076196174
 GameObject:
   m_ObjectHideFlags: 0

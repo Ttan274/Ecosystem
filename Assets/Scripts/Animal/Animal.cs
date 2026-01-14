@@ -9,17 +9,20 @@ public class Animal : MonoBehaviour
     public int Id { get; private set; }
     public Gender gender {get; private set;}
     public string animalName { get; private set;}
-    public DeathType deathType { get; private set; } = DeathType.Alive;
     public int childCount { get; protected set; } = 0;
     public int eatenObjectCount { get; protected set; } = 0;
+    public DeathBehaviour deathBehaviour;
     
     //Age
     public int age { get; private set; } = 0;
     private int maxAge;
     private int nextAgeCounter = 0;
+    private bool isAdult => age >= 2 && age < 10;
+
+    //State
+    public IAnimalState currentState { get; private set; }
 
     [Header("Movement")]
-    public AnimalState state = AnimalState.Idle;
     [SerializeField] private float moveSpeed;
     [SerializeField] private float tileTolerance;
     [SerializeField] private float randomWalkRange;
@@ -29,31 +32,31 @@ public class Animal : MonoBehaviour
 
     [Header("Hunger")]
     [SerializeField] private float hungerDecayRate;
-    [SerializeField] private float hungerThreshold;
-    [SerializeField] protected float eatDistance;
+    public float hungerThreshold;
+    public float eatDistance;
     [SerializeField] protected float waitForHunger;
-    protected GameObject food;
-    protected float currentHunger;
+    public GameObject food {  get; set; }
+    public float currentHunger {  get; private set; }   
     protected bool canSearchFood = true;
     private float searchFoodTimer = 0;
     protected bool canSearch = true;
 
     [Header("Thirst")]
     [SerializeField] private float thirstDecayRate;
-    [SerializeField] private float thirstThreshold;
+    public float thirstThreshold;
     [SerializeField] private float drinkDistance;
     [SerializeField] private float waitForThirst;
-    private float currentThirst;
+    public float currentThirst { get; private set; }
     private bool canSearchWater = true;
     private float searchWaterTimer = 0;
 
     [Header("Mating")]
     [SerializeField] private float matingCooldown;
     [SerializeField] private float matingThreshold;
-    [SerializeField] protected float matingDistance;
+    public float matingDistance;
     protected float matingTimer = 0;
-    protected bool hasMate = false;
-    protected bool IsReadyToMate => !isInfected && !hasMate && matingTimer >= matingCooldown
+    public bool hasMate = false;
+    public bool IsReadyToMate => isAdult && !isInfected && !hasMate && matingTimer >= matingCooldown
                                     && currentHunger >= 100f * matingThreshold
                                     && currentThirst >= 100f * matingThreshold;
 
@@ -62,12 +65,15 @@ public class Animal : MonoBehaviour
     [SerializeField] private float infectionDamage;
     [SerializeField] private float needsDamage;
     private float currentHealth;
-    private bool isDead = false;
+    public bool isDead { get; private set; } = false;
     public bool isInfected {get; private set;} = false;
     
     //UI
     private AnimalUI animUI;
     private Color gizmoColor;
+
+    //Debug
+    [SerializeField] public bool showDebug = false;
 
     public void Initialize(string aName, Gender g)
     {
@@ -92,34 +98,44 @@ public class Animal : MonoBehaviour
         animUI.SetGenderBar(gender);
         animUI.SetHunger(currentHunger, 100f);
         animUI.SetThirst(currentThirst, 100f);
+
+        //Death Behaviour Setup
+        deathBehaviour = new DeathBehaviour(0f);
+
+        ChangeState(new WanderState(this));
     }
 
     protected virtual void Update()
     {
         UpdateNeeds();
         UpdateNeeds2();
-        
-        switch (state)
-        {
-            case AnimalState.Wander:
-                WalkRandomly();
-                break;
-            case AnimalState.SeekFood:
-                FoodSearch();
-                break;
-            case AnimalState.SeekWater:
-                WaterSearch();
-                break;
-        }
+
+        currentState?.Tick();
 
         if (animator != null)
-            animator.SetBool("Move", state != AnimalState.Idle);
+            animator.SetBool("Move", currentState is WanderState
+                                  || currentState is SeekFoodState
+                                  || currentState is SeekWaterState);
 
         if (isInfected)
-            Die(infectionDamage, DeathType.Infection);
+        {
+            deathBehaviour.SetDeathBehaviour(infectionDamage, DeathType.Infection, false);
+            Hurt();
+        }
+           
 
         if (age >= maxAge)
-            Die(0, DeathType.Age, true);
+        {
+            deathBehaviour.SetDirectDead(DeathType.Age);
+            Hurt();
+        }
+    }
+
+    public void ChangeState(IAnimalState newState)
+    {
+        currentState?.Exit();
+        currentState = newState;
+        currentState?.Enter();
     }
 
     #region Needs
@@ -136,15 +152,12 @@ public class Animal : MonoBehaviour
             currentThirst = Mathf.Clamp(currentThirst, 0, 100f);
         }
 
-        if (currentHunger < hungerThreshold)
-            state = AnimalState.SeekFood;
-        if (currentThirst < thirstThreshold && food == null)
-            state = AnimalState.SeekWater;
-        if (currentHunger > hungerThreshold && currentThirst > thirstThreshold)
-            state = AnimalState.Wander;
-
         if (currentHunger <= 0 || currentThirst <= 0)
-            Die(needsDamage, DeathType.HungerORThirst);
+        {
+            deathBehaviour.SetDeathBehaviour(needsDamage, DeathType.HungerORThirst, false);
+            Hurt();
+            return;
+        }
 
         animUI.SetHunger(currentHunger, 100f);
         animUI.SetThirst(currentThirst, 100f);
@@ -174,11 +187,11 @@ public class Animal : MonoBehaviour
         }
 
         matingTimer += Time.deltaTime;
-        if (IsReadyToMate)
-            FindMate();
     }
 
-    protected virtual void FindMate(){ }
+    public virtual Animal FindClosestMate() { return null; }
+   
+    public virtual void Breed() { }
     #endregion
 
     #region Movement
@@ -186,20 +199,17 @@ public class Animal : MonoBehaviour
     {
         Tile current = Pathfinder.Instance.GetTileAtPosition(transform.position);
         if (current == null)
-        {
-            Debug.Log("Naber02");
             return;
-        }
 
         bool canWalk = false;
         while (!canWalk)
         {
-            int pX = current.x + Random.Range(-Mathf.RoundToInt(randomWalkRange), Mathf.RoundToInt(randomWalkRange));
-            int pZ = current.z + Random.Range(-Mathf.RoundToInt(randomWalkRange), Mathf.RoundToInt(randomWalkRange));
+            int pX = current.x + UnityEngine.Random.Range(-Mathf.RoundToInt(randomWalkRange), Mathf.RoundToInt(randomWalkRange));
+            int pZ = current.z + UnityEngine.Random.Range(-Mathf.RoundToInt(randomWalkRange), Mathf.RoundToInt(randomWalkRange));
 
             Tile destination = Pathfinder.Instance.GetTileGrid(pX, pZ);
             if(destination == null || destination.IsWalkable() == false)
-                state = AnimalState.Idle;
+                return;
 
             if (destination != null && current != null && destination.IsWalkable())
             {
@@ -209,7 +219,7 @@ public class Animal : MonoBehaviour
         }
     }
 
-    protected void WalkRandomly()
+    public void WalkRandomly()
     {
         if (currentPath == null)
             return;
@@ -220,7 +230,7 @@ public class Animal : MonoBehaviour
             FollowPath();
     }
 
-    protected void FollowPath()
+    public void FollowPath()
     {
         if (currentPath == null || pathIndex >= currentPath.Count) return;
 
@@ -235,7 +245,7 @@ public class Animal : MonoBehaviour
             MoveTo(targetPos);
     }
 
-    protected void MoveTo(Vector3 targetPos)
+    public void MoveTo(Vector3 targetPos)
     {
         Vector3 dir = (targetPos - transform.position).normalized;
         transform.position += dir * moveSpeed * Time.deltaTime;
@@ -250,20 +260,18 @@ public class Animal : MonoBehaviour
     #endregion
 
     #region Food & Water
-    protected virtual void FoodSearch() { }
-
-    protected virtual void FindFood() { }
+    public virtual void FindFood() { }
     
-    protected virtual void Eat() 
+    public virtual void Eat() 
     {
         currentPath.Clear();
         currentHunger = 100f;
-        state = AnimalState.Wander;
         eatenObjectCount++;
         canSearchFood = false;
+        //food = null;
     }
    
-    protected void WaterSearch()
+    public void WaterSearch()
     {
         Tile current = Pathfinder.Instance.GetTileAtPosition(transform.position);
         if (current == null) return;
@@ -276,7 +284,7 @@ public class Animal : MonoBehaviour
         {
             currentPath.Clear();
             currentThirst = 100f;
-            state = AnimalState.Wander;
+            ChangeState(new WanderState(this));
             canSearchWater = false;
             return;
         }
@@ -286,25 +294,30 @@ public class Animal : MonoBehaviour
     #endregion
 
     #region Health
-    protected virtual void Die(float damage, DeathType d, bool directDead = false)
+    protected void Hurt()
     {
-        if(directDead)
+        if (deathBehaviour.isDirectDead)
         {
             isDead = true;
         }
         else
         {
-            currentHealth -= damage * Time.deltaTime;
+            currentHealth -= deathBehaviour.damage * Time.deltaTime;
             if (currentHealth <= 0)
                 isDead = true;
         }
 
         if(isDead)
         {
-            Simulation.Instance.RemoveAnimal(this);
-            deathType = d;
-            gameObject.SetActive(false);
+            ChangeState(new DieState(this));
+            return;
         }
+    }
+
+    public virtual void Die()
+    {
+        Simulation.Instance.RemoveAnimal(this);
+        gameObject.SetActive(false);
     }
     
     public void Infect()
@@ -338,7 +351,7 @@ public class Animal : MonoBehaviour
 
         nextAgeCounter++;
 
-        if (nextAgeCounter > 3)
+        if (nextAgeCounter >= 3)
         {
             nextAgeCounter = 0;
             age++;
@@ -363,14 +376,6 @@ public class Animal : MonoBehaviour
     }
 }
 
-public enum AnimalState
-{
-    Idle,
-    Wander,
-    SeekFood,
-    SeekWater
-}
-
 public enum Gender
 {
     Unknown,
@@ -385,4 +390,32 @@ public enum DeathType
     HungerORThirst,
     Predator,
     Age
+}
+
+public struct DeathBehaviour
+{
+    public float damage;
+    public DeathType deathType;
+    public bool isDirectDead;
+
+    public DeathBehaviour(float dmg)
+    {
+        damage = dmg;
+        deathType = DeathType.Alive;
+        isDirectDead = false;
+    }
+
+    public void SetDeathBehaviour(float dmg, DeathType t, bool d)
+    {
+        damage = dmg;
+        deathType = t;
+        isDirectDead = d;
+    }
+
+    public void SetDirectDead(DeathType t)
+    {
+        damage = 0f;
+        deathType = t;
+        isDirectDead = true;
+    }
 }

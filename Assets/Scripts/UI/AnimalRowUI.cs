@@ -22,6 +22,6 @@ public class AnimalRowUI : MonoBehaviour
         nameTxt.text = animal.animalName;
         genderTxt.text = animal.gender.ToString();
         ageTxt.text = animal.age.ToString();
-        stateTxt.text = animal.state.ToString();
+        stateTxt.text = animal.currentState.GetStateName();
     }
 }
