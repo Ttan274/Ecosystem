@@ -17,48 +17,45 @@ public class Animal : MonoBehaviour
     public int age { get; private set; } = 0;
     private int maxAge;
     private int nextAgeCounter = 0;
-    private bool isAdult => age >= 2 && age < 10;
+    public bool isAdult => age >= 2 && age < 10;
 
-    //State
+    //State - Needs
     public IAnimalState currentState { get; private set; }
+    protected List<BaseNeed> needs = new List<BaseNeed>();
+    private VisionSensor sensor;
 
     [Header("Movement")]
     [SerializeField] private float moveSpeed;
     [SerializeField] private float tileTolerance;
     [SerializeField] private float randomWalkRange;
     private int pathIndex = 0;
-    protected List<Tile> currentPath = new List<Tile>();
+    public List<Tile> currentPath = new List<Tile>();
     private Animator animator;
+    protected bool canSearch = true;
 
     [Header("Hunger")]
     [SerializeField] private float hungerDecayRate;
-    public float hungerThreshold;
+    [SerializeField] private float hungerThreshold;
     public float eatDistance;
-    [SerializeField] protected float waitForHunger;
     public GameObject food {  get; set; }
     public float currentHunger {  get; private set; }   
-    protected bool canSearchFood = true;
-    private float searchFoodTimer = 0;
-    protected bool canSearch = true;
 
     [Header("Thirst")]
     [SerializeField] private float thirstDecayRate;
-    public float thirstThreshold;
-    [SerializeField] private float drinkDistance;
-    [SerializeField] private float waitForThirst;
+    [SerializeField] private float thirstThreshold;
+    public float drinkDistance;
+    [SerializeField] private float maxWaterSearchTimer;
+    private float waterSearchTimer;
+    public bool isSearchingWater { get; set; }
     public float currentThirst { get; private set; }
-    private bool canSearchWater = true;
-    private float searchWaterTimer = 0;
+
 
     [Header("Mating")]
-    [SerializeField] private float matingCooldown;
-    [SerializeField] private float matingThreshold;
+    public float matingCooldown;
+    public float matingThreshold;
     public float matingDistance;
-    protected float matingTimer = 0;
     public bool hasMate = false;
-    public bool IsReadyToMate => isAdult && !isInfected && !hasMate && matingTimer >= matingCooldown
-                                    && currentHunger >= 100f * matingThreshold
-                                    && currentThirst >= 100f * matingThreshold;
+    public float matingTimer { get; set; }
 
     [Header("Health")]
     [SerializeField] private Color infectedColor = Color.green;
@@ -80,6 +77,7 @@ public class Animal : MonoBehaviour
         gizmoColor = Random.ColorHSV();
         animUI = GetComponentInChildren<AnimalUI>();
         animator = GetComponent<Animator>();
+        sensor = GetComponent<VisionSensor>();
 
         //Starting value of animal datas
         currentHunger = 100f;
@@ -102,13 +100,18 @@ public class Animal : MonoBehaviour
         //Death Behaviour Setup
         deathBehaviour = new DeathBehaviour(0f);
 
+        //Setting the needs
+        needs.Add(new HungerNeed(this, hungerDecayRate, hungerThreshold));
+        needs.Add(new ThirstNeed(this, thirstDecayRate, thirstThreshold));
+        needs.Add(new ReproductionNeed(this));
+
         ChangeState(new WanderState(this));
     }
 
     protected virtual void Update()
     {
-        UpdateNeeds();
-        UpdateNeeds2();
+        foreach (var need in needs)
+            need.Update();
 
         currentState?.Tick();
 
@@ -117,18 +120,9 @@ public class Animal : MonoBehaviour
                                   || currentState is SeekFoodState
                                   || currentState is SeekWaterState);
 
-        if (isInfected)
-        {
-            deathBehaviour.SetDeathBehaviour(infectionDamage, DeathType.Infection, false);
-            Hurt();
-        }
-           
-
-        if (age >= maxAge)
-        {
-            deathBehaviour.SetDirectDead(DeathType.Age);
-            Hurt();
-        }
+        DeathCheck();
+        UpdateWaterSearchTimer();
+        matingTimer += Time.deltaTime;
     }
 
     public void ChangeState(IAnimalState newState)
@@ -139,59 +133,42 @@ public class Animal : MonoBehaviour
     }
 
     #region Needs
-    protected void UpdateNeeds()
-    {
-        if(canSearchFood)
-        {
-            currentHunger -= hungerDecayRate * Time.deltaTime;
-            currentHunger = Mathf.Clamp(currentHunger, 0, 100f);
-        }
-        if(canSearchWater)
-        {
-            currentThirst -= thirstDecayRate * Time.deltaTime;
-            currentThirst = Mathf.Clamp(currentThirst, 0, 100f);
-        }
-
-        if (currentHunger <= 0 || currentThirst <= 0)
-        {
-            deathBehaviour.SetDeathBehaviour(needsDamage, DeathType.HungerORThirst, false);
-            Hurt();
-            return;
-        }
-
-        animUI.SetHunger(currentHunger, 100f);
-        animUI.SetThirst(currentThirst, 100f);
-    }
-
-    private void UpdateNeeds2()
-    {
-        if (!canSearchWater)
-        {
-            searchWaterTimer += Time.deltaTime;
-
-            if (searchWaterTimer >= waitForThirst)
-            {
-                canSearchWater = true;
-                searchWaterTimer = 0;
-            }
-        }
-        if (!canSearchFood)
-        {
-            searchFoodTimer += Time.deltaTime;
-
-            if (searchFoodTimer >= waitForHunger)
-            {
-                canSearchFood = true;
-                searchFoodTimer = 0;
-            }
-        }
-
-        matingTimer += Time.deltaTime;
-    }
-
     public virtual Animal FindClosestMate() { return null; }
    
     public virtual void Breed() { }
+
+    public BaseNeed GetMostUrgentNeed()
+    {
+        BaseNeed mostUrgent = null;
+        float highest = float.MinValue;
+
+        foreach (var need in needs)
+        {
+            if (!need.IsUrgent())
+                continue;
+
+            float score = need.UrgencyScore();
+            if (score > highest)
+            {
+                highest = score;
+                mostUrgent = need;
+            }
+        }
+
+        return mostUrgent;
+    }
+
+    public T GetNeed<T>() where T : BaseNeed
+    {
+        foreach (var need in needs)
+        {
+            if (need is T)
+                return need as T;
+        }
+
+        return null;
+    }
+
     #endregion
 
     #region Movement
@@ -252,8 +229,9 @@ public class Animal : MonoBehaviour
         transform.LookAt(new Vector3(targetPos.x, transform.position.y, targetPos.z));
     }
 
-    protected void SetPath(Tile c, Tile d)
+    public void SetPath(Tile c, Tile d)
     {
+
         currentPath = Pathfinder.Instance.CreatePath(c, d);
         pathIndex = 0;
     }
@@ -265,35 +243,83 @@ public class Animal : MonoBehaviour
     public virtual void Eat() 
     {
         currentPath.Clear();
-        currentHunger = 100f;
+        GetNeed<HungerNeed>()?.ResolveCompleted();
         eatenObjectCount++;
-        canSearchFood = false;
-        //food = null;
     }
-   
-    public void WaterSearch()
+    
+    public Tile GetClosestWater()
     {
-        Tile current = Pathfinder.Instance.GetTileAtPosition(transform.position);
-        if (current == null) return;
+        if (sensor == null) return null;
 
-        Tile closestWater = Pathfinder.Instance.GetClosestWaterTile(current);
-        if (closestWater == null) return;
+        float minDist = float.MaxValue;
+        Tile closest = null;
 
-        float distance = Vector3.Distance(transform.position, closestWater.transform.position);
-        if (distance < drinkDistance)
+        foreach (GameObject obj in sensor.visibleTargets)
         {
-            currentPath.Clear();
-            currentThirst = 100f;
-            ChangeState(new WanderState(this));
-            canSearchWater = false;
-            return;
+            Tile t = obj.GetComponent<Tile>();
+            if (t == null) continue;
+
+            float d = Vector3.Distance(transform.position, t.transform.position);
+            if(d < minDist)
+            {
+                minDist = d;
+                closest = t;
+            }
         }
-        SetPath(current, closestWater);
-        FollowPath();
+
+        return closest;
+    }
+
+    public void ResetWaterSearchTimer() => waterSearchTimer = 0;
+
+    private void UpdateWaterSearchTimer()
+    {
+        if (!isSearchingWater) return;
+
+        waterSearchTimer += Time.deltaTime;
+
+        if(waterSearchTimer >= maxWaterSearchTimer)
+        {
+            isSearchingWater = false;
+            waterSearchTimer = 0;
+        }
+    }
+
+    public void SetThirst(float val)
+    {
+        currentThirst = val;
+        animUI.SetThirst(currentThirst, 100f);
+    }
+
+    public void SetHunger(float val)
+    {
+        currentHunger = val;
+        animUI.SetHunger(currentHunger, 100f);
     }
     #endregion
 
     #region Health
+    private void DeathCheck()
+    {
+        if (isInfected)
+        {
+            deathBehaviour.SetDeathBehaviour(infectionDamage, DeathType.Infection, false);
+            Hurt();
+        }
+
+        if (age >= maxAge)
+        {
+            deathBehaviour.SetDirectDead(DeathType.Age);
+            Hurt();
+        }
+
+        if (currentHunger <= 0 || currentThirst <= 0)
+        {
+            deathBehaviour.SetDeathBehaviour(needsDamage, DeathType.HungerORThirst, false);
+            Hurt();
+        }
+    }
+
     protected void Hurt()
     {
         if (deathBehaviour.isDirectDead)

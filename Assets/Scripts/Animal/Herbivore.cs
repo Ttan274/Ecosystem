@@ -69,7 +69,7 @@ public class Herbivore : Animal
 
         foreach (Herbivore other in herbivores)
         {
-            if (other == this || !other.IsReadyToMate || other.gender == this.gender || other.hasMate) continue;
+            if (other == this || other.gender == this.gender || other.hasMate) continue;
 
             float distance = Vector3.Distance(transform.position, other.transform.position);
             if(distance <= closest)

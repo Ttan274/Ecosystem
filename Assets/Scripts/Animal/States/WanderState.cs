@@ -23,22 +23,15 @@ public class WanderState : IAnimalState
 
     public void Tick()
     {
-        if(animal.IsReadyToMate)
+        if(!animal.isSearchingWater)
         {
-            animal.ChangeState(new MateState(animal));
-            return;
-        }
+            BaseNeed urgent = animal.GetMostUrgentNeed();
 
-        if(animal.currentHunger < animal.hungerThreshold)
-        {
-            animal.ChangeState(new SeekFoodState(animal));
-            return;
-        }
-
-        if (animal.currentThirst < animal.thirstThreshold)
-        {
-            animal.ChangeState(new SeekWaterState(animal));
-            return;
+            if (urgent != null)
+            {
+                urgent.Resolve();
+                return;
+            }
         }
 
         animal.WalkRandomly();
