@@ -1784,6 +1784,7 @@ MonoBehaviour:
   hungerDecayRate: 2.5
   hungerThreshold: 50
   eatDistance: 0.5
+  maxFoodSearchTimer: 5
   thirstDecayRate: 3.5
   thirstThreshold: 50
   drinkDistance: 0.6

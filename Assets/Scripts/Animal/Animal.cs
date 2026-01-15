@@ -33,20 +33,19 @@ public class Animal : MonoBehaviour
     private Animator animator;
     protected bool canSearch = true;
 
+    [Header("Search Intent")]
+    public SearchIntent searchIntent = new SearchIntent();
+
     [Header("Hunger")]
     [SerializeField] private float hungerDecayRate;
     [SerializeField] private float hungerThreshold;
     public float eatDistance;
-    public GameObject food {  get; set; }
     public float currentHunger {  get; private set; }   
 
     [Header("Thirst")]
     [SerializeField] private float thirstDecayRate;
     [SerializeField] private float thirstThreshold;
     public float drinkDistance;
-    [SerializeField] private float maxWaterSearchTimer;
-    private float waterSearchTimer;
-    public bool isSearchingWater { get; set; }
     public float currentThirst { get; private set; }
 
 
@@ -70,7 +69,7 @@ public class Animal : MonoBehaviour
     private Color gizmoColor;
 
     //Debug
-    [SerializeField] public bool showDebug = false;
+    public bool showDebug = false;
 
     public void Initialize(string aName, Gender g)
     {
@@ -121,7 +120,7 @@ public class Animal : MonoBehaviour
                                   || currentState is SeekWaterState);
 
         DeathCheck();
-        UpdateWaterSearchTimer();
+        searchIntent.Update();
         matingTimer += Time.deltaTime;
     }
 
@@ -238,15 +237,39 @@ public class Animal : MonoBehaviour
     #endregion
 
     #region Food & Water
-    public virtual void FindFood() { }
-    
-    public virtual void Eat() 
+    public virtual bool CanEat(IFoodSource source) { return false; }
+
+    public void Eat() 
     {
         currentPath.Clear();
         GetNeed<HungerNeed>()?.ResolveCompleted();
         eatenObjectCount++;
     }
     
+    public IFoodSource GetClosestFood()
+    {
+        if (sensor == null) return null;
+
+        float minDist = float.MaxValue;
+        IFoodSource closest = null;
+
+        foreach (var food in sensor.foodSources)
+        {
+            if (!CanEat(food))
+                continue;
+
+            float d = Vector3.Distance(transform.position, food.FoodTransform.position);
+
+            if(d < minDist)
+            {
+                minDist = d;
+                closest = food;
+            }
+        }
+
+        return closest;
+    }
+
     public Tile GetClosestWater()
     {
         if (sensor == null) return null;
@@ -268,21 +291,6 @@ public class Animal : MonoBehaviour
         }
 
         return closest;
-    }
-
-    public void ResetWaterSearchTimer() => waterSearchTimer = 0;
-
-    private void UpdateWaterSearchTimer()
-    {
-        if (!isSearchingWater) return;
-
-        waterSearchTimer += Time.deltaTime;
-
-        if(waterSearchTimer >= maxWaterSearchTimer)
-        {
-            isSearchingWater = false;
-            waterSearchTimer = 0;
-        }
     }
 
     public void SetThirst(float val)

@@ -3,6 +3,7 @@ using UnityEngine;
 public class SeekFoodState : IAnimalState
 {
     private Animal animal;
+    private IFoodSource target;
     
     public SeekFoodState(Animal animal)
     {
@@ -11,19 +12,29 @@ public class SeekFoodState : IAnimalState
 
     public void Enter()
     {
-        animal.FindFood();
+        animal.searchIntent.Start(SearchIntentType.Food, 5f);
+
+        target = animal.GetClosestFood();
+
+        if(target != null)
+        {
+            Tile current = Pathfinder.Instance.GetTileAtPosition(animal.transform.position);
+            Tile destination = Pathfinder.Instance.GetTileAtPosition(target.FoodTransform.position);
+            if (current != null && destination != null)
+                animal.SetPath(current, destination);
+        }
     }
 
     public void Exit()
     {
-        
+        target = null;
     }
 
     public string GetStateName() => "Seek-Food";
 
     public void Tick()
     {
-        if(animal.food == null)
+        if(target == null)
         {
             animal.ChangeState(new WanderState(animal));
             return;
@@ -31,9 +42,12 @@ public class SeekFoodState : IAnimalState
 
         float distance = Vector3.Distance(
             animal.transform.position,
-            animal.food.transform.position);
+            target.FoodTransform.position);
+
         if(distance <= animal.eatDistance)
         {
+            animal.searchIntent.Clear();
+            target.Consume();
             animal.ChangeState(new EatState(animal));
             return;
         }

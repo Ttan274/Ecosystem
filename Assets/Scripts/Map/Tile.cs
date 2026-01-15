@@ -5,6 +5,7 @@ public class Tile : MonoBehaviour
     public TileType tileType;
     public bool hasTree = false;
     public bool hasPlant = false;
+    public Plant plant;
     public int x, z;
 
     public void SetType(TileType type, int x, int z)
@@ -52,13 +53,19 @@ public class Tile : MonoBehaviour
         GameObject placed = Instantiate(g, objectPos, Quaternion.identity, transform.parent);
 
         if (isPlant)
-            placed.GetComponent<Plant>().Initalize(this);
+        {
+            plant = placed.GetComponent<Plant>();
+            plant.Initalize(this);
+        }
     }
 
-    public void ResetTile()
+    public void ResetTile(bool isDrought)
     {
         hasPlant = false;
-        MapGen.Instance.CreateBush();
+        plant = null;
+        
+        if(!isDrought)
+            MapGen.Instance.CreateBush();
     }
 }
 

@@ -23,7 +23,7 @@ public class WanderState : IAnimalState
 
     public void Tick()
     {
-        if(!animal.isSearchingWater)
+        if(!animal.searchIntent.IsActive)
         {
             BaseNeed urgent = animal.GetMostUrgentNeed();
 

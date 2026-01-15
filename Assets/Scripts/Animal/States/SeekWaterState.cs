@@ -12,8 +12,7 @@ public class SeekWaterState : IAnimalState
 
     public void Enter()
     {
-        animal.isSearchingWater = true;
-        animal.ResetWaterSearchTimer();
+        animal.searchIntent.Start(SearchIntentType.Water, 5f);
 
         targetWater = animal.GetClosestWater();
 
@@ -44,8 +43,9 @@ public class SeekWaterState : IAnimalState
         float distance = Vector3.Distance(animal.transform.position, targetWater.transform.position);
         if (distance <= animal.drinkDistance + 0.5f)
         {
-            animal.currentPath.Clear();
             animal.GetNeed<ThirstNeed>()?.ResolveCompleted();
+            animal.currentPath.Clear();
+            animal.searchIntent.Clear();
             animal.ChangeState(new WanderState(animal));
             return;
         }

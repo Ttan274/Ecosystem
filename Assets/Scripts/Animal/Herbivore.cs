@@ -7,57 +7,8 @@ public class Herbivore : Animal
         base.Update();
     }
 
-    #region Food
-    public override void FindFood()
-    {
-        if (!canSearch)
-            return;
+    public override bool CanEat(IFoodSource source) => source is Plant;
 
-        FindClosestFood();
-
-        if (food == null)
-            return;
-
-        Tile current = Pathfinder.Instance.GetTileAtPosition(transform.position);
-        Tile destination = Pathfinder.Instance.GetTileAtPosition(food.transform.position);
-
-        if (current != null && destination != null)
-            SetPath(current, destination);
-    }
-
-    private void FindClosestFood()
-    {
-        Plant[] allPlants = FindObjectsByType<Plant>(FindObjectsSortMode.None);
-
-        if (allPlants.Length <= 0)
-        {
-            canSearch = false;
-            return; //No plants left
-        }
-
-        float closestDist = Mathf.Infinity;
-        Plant closest = null;
-
-        foreach (Plant plant in allPlants)
-        {
-            float d = Vector3.Distance(transform.position, plant.transform.position);
-            if (d < closestDist)
-            {
-                closestDist = d;
-                closest = plant;
-            }
-        }
-
-        food = closest.gameObject;
-    }
-
-    public override void Eat()
-    {
-        food.GetComponent<Plant>().Eat();
-        base.Eat();
-    }
-    #endregion
-   
     #region Mate
 
     public override Animal FindClosestMate()
@@ -95,7 +46,7 @@ public class Herbivore : Animal
 
     #endregion
 
-        //Helper method when eaten by carnivores
+    //Helper method when eaten by carnivores
     public void GotEaten()
     {
         deathBehaviour.SetDeathBehaviour(0f, DeathType.Predator, true);

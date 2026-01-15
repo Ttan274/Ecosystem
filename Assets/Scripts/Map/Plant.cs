@@ -1,15 +1,18 @@
 using UnityEngine;
 
-public class Plant : MonoBehaviour
+public class Plant : MonoBehaviour, IFoodSource
 {
-    [SerializeField] private Tile parentTile;
-
+    private Tile parentTile;
+    private bool isAlive = true;
+    public Transform FoodTransform => transform;
+    public bool IsAvailable => isAlive;
+    
     public void Initalize(Tile t) => parentTile = t;
 
-    public void Eat()
+    public void Consume()
     {
-        if (!Simulation.Instance.IsDroughtEnabled)
-            parentTile.ResetTile();
+        isAlive = false;
+        parentTile.ResetTile(Simulation.Instance.IsDroughtEnabled);
         Destroy(gameObject);
     }
 }
