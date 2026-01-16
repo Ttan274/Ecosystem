@@ -12,6 +12,7 @@ public class Animal : MonoBehaviour
     public int childCount { get; protected set; } = 0;
     public int eatenObjectCount { get; protected set; } = 0;
     public DeathBehaviour deathBehaviour;
+    public int Species;
     
     //Age
     public int age { get; private set; } = 0;
@@ -49,11 +50,11 @@ public class Animal : MonoBehaviour
     public float drinkDistance;
     public float currentThirst { get; private set; }
 
-
     [Header("Mating")]
     public float matingCooldown;
     public float matingThreshold;
     public float matingDistance;
+    private float chaseTimer = 0f;
     public bool hasMate = false;
     public float matingTimer { get; set; }
 
@@ -72,7 +73,7 @@ public class Animal : MonoBehaviour
     //Debug
     public bool showDebug = false;
 
-    public void Initialize(string aName, Gender g)
+    public void Initialize(string aName, Gender g, bool isHerbivore)
     {
         gizmoColor = Random.ColorHSV();
         animUI = GetComponentInChildren<AnimalUI>();
@@ -87,6 +88,7 @@ public class Animal : MonoBehaviour
         //Animal specific data
         Id = globalId++;
         animalName = aName;
+        Species = isHerbivore ? 0 : 1;
         gameObject.name = animalName;
         gender = g;
         maxAge = Random.Range(8, 15);
@@ -192,8 +194,6 @@ public class Animal : MonoBehaviour
     #endregion
 
     #region Needs
-    public virtual Animal FindClosestMate() { return null; }    //??
-   
     public virtual void Breed() { }     //??
 
     public BaseNeed GetMostUrgentNeed()
@@ -287,22 +287,32 @@ public class Animal : MonoBehaviour
         transform.LookAt(new Vector3(targetPos.x, transform.position.y, targetPos.z));
     }
 
-    public void MoveTowardsEntity(Animal target)
+    public void ChaseEntity(Animal target, float repathInterval = 0.5f)
     {
         if (target == null) return;
 
-        Tile targetTile = Pathfinder.Instance.GetTileAtPosition(target.transform.position);
-        if (targetTile == null) return;
-
-        //if target tile is not walkable, get closest walkable tile
-        if (!targetTile.IsWalkable())
+        chaseTimer += Time.deltaTime;
+        if(chaseTimer < repathInterval && currentPath != null && currentPath.Count > 0)
         {
-            targetTile = Pathfinder.Instance.GetClosestWalkableTile(targetTile);
-            if (targetTile == null) return;
+            FollowPath();
+            return;
         }
 
-        Vector3 targetPos = targetTile.transform.position;
-        MoveTo(targetPos);
+        chaseTimer = 0f;
+
+        Tile current = Pathfinder.Instance.GetTileAtPosition(transform.position);
+        Tile destination = Pathfinder.Instance.GetTileAtPosition(target.transform.position);
+
+        if (current == null || destination == null)
+            return;
+
+        if(!destination.IsWalkable())
+            destination = Pathfinder.Instance.GetClosestWalkableTile(destination);
+
+        if (destination == null)
+            return;
+
+        SetPath(current, destination);
     }
 
     public void SetPath(Tile c, Tile d)
@@ -371,7 +381,7 @@ public class Animal : MonoBehaviour
 
         foreach (Animal other in sensor.visibleAnimals)
         {
-            if (other == this || other.gender == gender || other.hasMate) continue;
+            if (!CanMate(other)) continue;
 
             float distance = Vector3.Distance(transform.position, other.transform.position);
             if(distance < minDist)
@@ -382,6 +392,20 @@ public class Animal : MonoBehaviour
         }
 
         return closest;
+    }
+
+    private bool CanMate(Animal other)
+    {
+        //If other is null or same itself then cannot mate
+        if (other == null ||other == this ) return false;
+
+        //If other has mate or same gender they cannot mate
+        if (other.hasMate || other.gender == gender) return false;
+
+        //Check species both are different then they cannot mate
+        if (other.Species != Species) return false;
+
+        return true;
     }
 
     #endregion

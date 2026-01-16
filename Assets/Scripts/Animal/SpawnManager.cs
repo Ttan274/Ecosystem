@@ -55,7 +55,7 @@ public class SpawnManager : MonoBehaviour
         //Spawning the animal
         Vector3 pos = spawnPos + new Vector3(0, 0.5f, 0);
         Animal a = Instantiate(prefab, pos, Quaternion.identity, transform).GetComponent<Animal>();
-        a.Initialize(GetNameForAnimal(), gender);
+        a.Initialize(GetNameForAnimal(), gender, isHerbivore);
 
         //Listing the animals
         animalList.Add(a);

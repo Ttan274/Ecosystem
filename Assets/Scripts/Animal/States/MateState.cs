@@ -48,6 +48,6 @@ public class MateState : IAnimalState
             return;
         }
 
-        animal.MoveTowardsEntity(mate);
+        animal.ChaseEntity(mate);
     }
 }

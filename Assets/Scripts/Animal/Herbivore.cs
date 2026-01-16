@@ -1,15 +1,14 @@
 using UnityEngine;
 
-public class Herbivore : Animal
+public class Herbivore : Animal, IFoodSource
 {
+    public Transform FoodTransform => transform;
+    public bool IsAvailable => !isDead;
+
     protected override void Update()
     {
         base.Update();
     }
-
-    public override bool CanEat(IFoodSource source) => source is Plant;
-
-    #region Mate
 
     public override void Breed()
     {
@@ -17,17 +16,14 @@ public class Herbivore : Animal
         matingTimer = 0;
 
         if (gender == Gender.Female)
-        {
             SpawnManager.Instance.GenerateAnimal(true, transform.position);
-        }
     }
 
-    #endregion
+    public override bool CanEat(IFoodSource source) => source is Plant;
 
-    //Þuan iþlevsiz carnivore yok zaten ortada
-    public void GotEaten()
+    public void Consume()
     {
-        deathBehaviour.SetDeathBehaviour(0f, DeathType.Predator, true);
+        deathBehaviour.SetDirectDead(DeathType.Predator);
         Hurt();
-    } 
+    }
 }

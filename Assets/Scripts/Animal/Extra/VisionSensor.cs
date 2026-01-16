@@ -13,8 +13,8 @@ public class VisionSensor : MonoBehaviour
     [SerializeField] private float scanInterval = 0.4f;
     private float scanTimer = 0;
     public List<GameObject> visibleTargets = new(); //Water
-    public List<IFoodSource> foodSources = new();   //Food
-    public List<Animal> visibleAnimals = new();     //Other Animals
+    public List<IFoodSource> foodSources = new();   //Food (Plant, Herbivore)
+    public List<Animal> visibleAnimals = new();     //Mate
 
     //Reference
     private Animal animal;
@@ -52,13 +52,18 @@ public class VisionSensor : MonoBehaviour
             {
                 if(other != animal && !other.isDead)
                 {
+                    //Mate Check
                     visibleAnimals.Add(other);
                     animal.Remember(MemoryType.Mate, other, 8f);
-                }
 
+
+                    //Food Check ???? Carnivore özel burasý
+                    IFoodSource source = other as IFoodSource;
+                    if (source != null && source.IsAvailable)
+                        foodSources.Add(source);
+                }
                 continue;
             }
-
 
             //Tile Check
             Tile t;

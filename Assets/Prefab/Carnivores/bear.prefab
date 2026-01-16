@@ -2076,6 +2076,8 @@ GameObject:
   - component: {fileID: 6764467706563385452}
   - component: {fileID: 6524462133114751755}
   - component: {fileID: 3335740979345940386}
+  - component: {fileID: 5027477435426801673}
+  - component: {fileID: 4402838143116016628}
   m_Layer: 0
   m_Name: bear
   m_TagString: Untagged
@@ -2139,21 +2141,64 @@ MonoBehaviour:
   moveSpeed: 2.3
   tileTolerance: 0.2
   randomWalkRange: 8
+  currentPath: []
+  searchIntent:
+    type: 0
+    timer: 0
+    maxDuration: 5
+  memories: []
   hungerDecayRate: 1
   hungerThreshold: 50
   eatDistance: 1
-  waitForHunger: 4
   thirstDecayRate: 3.5
   thirstThreshold: 50
-  drinkDistance: 0.6
-  waitForThirst: 2
+  drinkDistance: 1.4
   matingCooldown: 10
   matingThreshold: 0.7
   matingDistance: 3
+  hasMate: 0
   infectedColor: {r: 0.8773585, g: 0.1779548, b: 0.7158103, a: 1}
   infectionDamage: 10
   needsDamage: 5
-  checkPrey: 1.2
+  showDebug: 0
+--- !u!114 &5027477435426801673
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5994896448880089813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a0aaf84642bc0346a38f43a59a4a31b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VisionSensor
+  viewRadius: 6
+  viewAngle: 120
+  scanInterval: 0.4
+  visibleTargets: []
+  visibleAnimals: []
+--- !u!65 &4402838143116016628
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5994896448880089813}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.3, y: 0.5, z: 1}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &6027227240316508820
 GameObject:
   m_ObjectHideFlags: 0
