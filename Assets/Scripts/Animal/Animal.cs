@@ -160,7 +160,7 @@ public class Animal : MonoBehaviour
         memories.Add(new MemoryEntry(type, pos, lifeTime));
     }
 
-    public Vector3? GetMemoryPosition(MemoryType type)
+    private Vector3? GetMemoryPosition(MemoryType type)
     {
         foreach (MemoryEntry m in memories)
         {
@@ -168,6 +168,16 @@ public class Animal : MonoBehaviour
                 return m.position;
         }
         return null;
+    }
+
+    public bool TryFeedMemoryToIntent(MemoryType type)
+    {
+        Vector3? memPos = GetMemoryPosition(type);
+        if (!memPos.HasValue)
+            return false;
+
+        searchIntent.SetTargetPosition(memPos.Value);
+        return true;
     }
 
     #endregion

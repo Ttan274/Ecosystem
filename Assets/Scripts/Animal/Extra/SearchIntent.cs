@@ -6,6 +6,7 @@ public class SearchIntent
     public SearchIntentType type = SearchIntentType.None;
     public float timer = 0f;
     public float maxDuration = 5f;
+    public Vector3? targetPos;  
     public bool IsActive => type != SearchIntentType.None;
 
     public void Start(SearchIntentType t, float duration)
@@ -22,6 +23,11 @@ public class SearchIntent
         timer += Time.deltaTime;
         if (timer >= maxDuration)
             Clear();
+    }
+
+    public void SetTargetPosition(Vector3 pos)
+    {
+        targetPos = pos;
     }
 
     public void Clear()

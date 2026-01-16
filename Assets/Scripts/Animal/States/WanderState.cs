@@ -26,7 +26,6 @@ public class WanderState : IAnimalState
         if(!animal.searchIntent.IsActive)
         {
             BaseNeed urgent = animal.GetMostUrgentNeed();
-
             if (urgent != null)
             {
                 urgent.Resolve();

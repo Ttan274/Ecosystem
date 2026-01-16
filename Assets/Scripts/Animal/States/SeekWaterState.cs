@@ -18,27 +18,19 @@ public class SeekWaterState : IAnimalState
         targetWater = animal.GetClosestWater();
         if(targetWater != null)
         {
-            Tile current = Pathfinder.Instance.GetTileAtPosition(animal.transform.position);
-            Tile waterTile = Pathfinder.Instance.GetClosestWalkableToWaterTile(targetWater);
-            if (current != null && waterTile != null)
-                animal.SetPath(current, waterTile);
+            SetPathToWater();
             return;
         }
 
         //Memory
-        Vector3? memPos = animal.GetMemoryPosition(MemoryType.Water);
-        if(memPos.HasValue)
+        if(animal.TryFeedMemoryToIntent(MemoryType.Water))
         {
-            Tile current = Pathfinder.Instance.GetTileAtPosition(animal.transform.position);
-            Tile tileAtPos = Pathfinder.Instance.GetTileAtPosition(memPos.Value);
-            Tile waterTile = Pathfinder.Instance.GetClosestWalkableToWaterTile(tileAtPos);
-
-            if (current != null && waterTile != null)
-                animal.SetPath(current, waterTile);
+            targetWater = Pathfinder.Instance.GetTileAtPosition(animal.searchIntent.targetPos.Value);
+            SetPathToWater();
             return;
         }
     }
-
+   
     public void Exit()
     {
         targetWater = null;
@@ -54,16 +46,29 @@ public class SeekWaterState : IAnimalState
             return;
         }
 
-        float distance = Vector3.Distance(animal.transform.position, targetWater.transform.position);
-        if (distance <= animal.drinkDistance + 0.5f)
+        if(targetWater != null)
         {
-            animal.GetNeed<ThirstNeed>()?.ResolveCompleted();
-            animal.currentPath.Clear();
-            animal.searchIntent.Clear();
-            animal.ChangeState(new WanderState(animal));
-            return;
-        }
+            float distance = Vector3.Distance(animal.transform.position, targetWater.transform.position);
+            if (distance <= animal.drinkDistance + 0.5f)
+            {
+                animal.GetNeed<ThirstNeed>()?.ResolveCompleted();
+                animal.currentPath.Clear();
+                animal.searchIntent.Clear();
+                animal.ChangeState(new WanderState(animal));
+                return;
+            }
 
-        animal.FollowPath();
+            animal.FollowPath();
+        }
     }
+
+    private void SetPathToWater()
+    {
+        Tile current = Pathfinder.Instance.GetTileAtPosition(animal.transform.position);
+        Tile waterTile = Pathfinder.Instance.GetClosestWalkableToWaterTile(targetWater);
+
+        if (current != null && waterTile != null)
+            animal.SetPath(current, waterTile);
+    }
+
 }
