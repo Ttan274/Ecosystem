@@ -41,7 +41,7 @@ public class SeekFoodState : IAnimalState
 
     public void Tick()
     {
-        if(target == null)
+        if(target == null || !target.IsAvailable)
         {
             animal.ChangeState(new WanderState(animal));
             return;

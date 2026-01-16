@@ -65,7 +65,7 @@ public class SeekWaterState : IAnimalState
     private void SetPathToWater()
     {
         Tile current = Pathfinder.Instance.GetTileAtPosition(animal.transform.position);
-        Tile waterTile = Pathfinder.Instance.GetClosestWalkableToWaterTile(targetWater);
+        Tile waterTile = Pathfinder.Instance.GetClosestWalkableTile(targetWater);
 
         if (current != null && waterTile != null)
             animal.SetPath(current, waterTile);

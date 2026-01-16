@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 public class Animal : MonoBehaviour
 {
@@ -18,7 +17,7 @@ public class Animal : MonoBehaviour
     public int age { get; private set; } = 0;
     private int maxAge;
     private int nextAgeCounter = 0;
-    public bool isAdult => age >= 2 && age < 10;
+    public bool isAdult => age >= 1;    //age >= 2 && age < 10;
 
     //State - Needs
     public IAnimalState currentState { get; private set; }
@@ -144,28 +143,38 @@ public class Animal : MonoBehaviour
 
     public void Remember(MemoryType type, Vector3 pos, float lifeTime)
     {
-        //if same type exists, update it
-        foreach (MemoryEntry m in memories)
-        {
-            if(m.type == type)
-            {
-                m.position = pos;
-                m.timer = 0f;
-                m.maxLifeTime = lifeTime;
-                return;
-            }
-        }
+        Forget(type);
 
         //add if type not exists
         memories.Add(new MemoryEntry(type, pos, lifeTime));
     }
 
+    public void Remember(MemoryType type, Animal entity, float lifeTime)
+    {
+        Forget(type);
+
+        //add if type not exists
+        memories.Add(new MemoryEntry(type, entity, lifeTime));
+    }
+
+    private void Forget(MemoryType type) => memories.RemoveAll(m => m.type == type);
+
     private Vector3? GetMemoryPosition(MemoryType type)
     {
         foreach (MemoryEntry m in memories)
         {
-            if (m.type == type && m.IsValid)
+            if (m.type == type && m.IsValid && m.IsSpatial)
                 return m.position;
+        }
+        return null;
+    }
+
+    public Animal GetMemoryEntity(MemoryType type)
+    {
+        foreach (MemoryEntry m in memories)
+        {
+            if (m.type == MemoryType.Mate && m.IsValid && m.IsEntity)
+                return m.entity;
         }
         return null;
     }
@@ -183,9 +192,9 @@ public class Animal : MonoBehaviour
     #endregion
 
     #region Needs
-    public virtual Animal FindClosestMate() { return null; }
+    public virtual Animal FindClosestMate() { return null; }    //??
    
-    public virtual void Breed() { }
+    public virtual void Breed() { }     //??
 
     public BaseNeed GetMostUrgentNeed()
     {
@@ -231,8 +240,8 @@ public class Animal : MonoBehaviour
         bool canWalk = false;
         while (!canWalk)
         {
-            int pX = current.x + UnityEngine.Random.Range(-Mathf.RoundToInt(randomWalkRange), Mathf.RoundToInt(randomWalkRange));
-            int pZ = current.z + UnityEngine.Random.Range(-Mathf.RoundToInt(randomWalkRange), Mathf.RoundToInt(randomWalkRange));
+            int pX = current.x + Random.Range(-Mathf.RoundToInt(randomWalkRange), Mathf.RoundToInt(randomWalkRange));
+            int pZ = current.z + Random.Range(-Mathf.RoundToInt(randomWalkRange), Mathf.RoundToInt(randomWalkRange));
 
             Tile destination = Pathfinder.Instance.GetTileGrid(pX, pZ);
             if(destination == null || destination.IsWalkable() == false)
@@ -262,8 +271,7 @@ public class Animal : MonoBehaviour
         if (currentPath == null || pathIndex >= currentPath.Count) return;
 
         Vector3 targetPos = currentPath[pathIndex].transform.position;
-        if (targetPos == null)
-            Debug.Log("Naber03");
+        
         float dist = Vector3.Distance(transform.position, targetPos);
 
         if (dist <= tileTolerance)
@@ -272,11 +280,29 @@ public class Animal : MonoBehaviour
             MoveTo(targetPos);
     }
 
-    public void MoveTo(Vector3 targetPos)
+    private void MoveTo(Vector3 targetPos)
     {
         Vector3 dir = (targetPos - transform.position).normalized;
         transform.position += dir * moveSpeed * Time.deltaTime;
         transform.LookAt(new Vector3(targetPos.x, transform.position.y, targetPos.z));
+    }
+
+    public void MoveTowardsEntity(Animal target)
+    {
+        if (target == null) return;
+
+        Tile targetTile = Pathfinder.Instance.GetTileAtPosition(target.transform.position);
+        if (targetTile == null) return;
+
+        //if target tile is not walkable, get closest walkable tile
+        if (!targetTile.IsWalkable())
+        {
+            targetTile = Pathfinder.Instance.GetClosestWalkableTile(targetTile);
+            if (targetTile == null) return;
+        }
+
+        Vector3 targetPos = targetTile.transform.position;
+        MoveTo(targetPos);
     }
 
     public void SetPath(Tile c, Tile d)
@@ -287,16 +313,8 @@ public class Animal : MonoBehaviour
     }
     #endregion
 
-    #region Food & Water
-    public virtual bool CanEat(IFoodSource source) { return false; }
+    #region Vision
 
-    public void Eat() 
-    {
-        currentPath.Clear();
-        GetNeed<HungerNeed>()?.ResolveCompleted();
-        eatenObjectCount++;
-    }
-    
     public IFoodSource GetClosestFood()
     {
         if (sensor == null) return null;
@@ -311,7 +329,7 @@ public class Animal : MonoBehaviour
 
             float d = Vector3.Distance(transform.position, food.FoodTransform.position);
 
-            if(d < minDist)
+            if (d < minDist)
             {
                 minDist = d;
                 closest = food;
@@ -334,7 +352,7 @@ public class Animal : MonoBehaviour
             if (t == null) continue;
 
             float d = Vector3.Distance(transform.position, t.transform.position);
-            if(d < minDist)
+            if (d < minDist)
             {
                 minDist = d;
                 closest = t;
@@ -342,6 +360,40 @@ public class Animal : MonoBehaviour
         }
 
         return closest;
+    }
+
+    public Animal GetClosestMate()
+    {
+        if (sensor == null) return null;
+
+        float minDist = float.MaxValue;
+        Animal closest = null;
+
+        foreach (Animal other in sensor.visibleAnimals)
+        {
+            if (other == this || other.gender == gender || other.hasMate) continue;
+
+            float distance = Vector3.Distance(transform.position, other.transform.position);
+            if(distance < minDist)
+            {
+                minDist = distance;
+                closest = other;
+            }
+        }
+
+        return closest;
+    }
+
+    #endregion
+
+    #region Food & Water
+    public virtual bool CanEat(IFoodSource source) { return false; }
+
+    public void Eat() 
+    {
+        currentPath.Clear();
+        GetNeed<HungerNeed>()?.ResolveCompleted();
+        eatenObjectCount++;
     }
 
     public void SetThirst(float val)
@@ -355,6 +407,7 @@ public class Animal : MonoBehaviour
         currentHunger = val;
         animUI.SetHunger(currentHunger, 100f);
     }
+    
     #endregion
 
     #region Health

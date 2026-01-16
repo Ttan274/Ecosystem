@@ -14,7 +14,14 @@ public class ReproductionNeed : BaseNeed
                 Animal.matingTimer >= Animal.matingCooldown;
     }
 
-    public override void Resolve() => Animal.ChangeState(new MateState(Animal));
+    public override void Resolve()
+    {
+        if (Animal.searchIntent.IsActive)
+            return;
+
+        Animal.searchIntent.Start(SearchIntentType.Mate, 8f);
+        Animal.ChangeState(new MateState(Animal));
+    }
 
     public override void ResolveCompleted()
     {

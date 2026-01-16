@@ -13,7 +13,6 @@ public class HungerNeed : BaseNeed
 
     public override bool IsUrgent() => Value <= Threshold;
    
-
     public override void Resolve() => Animal.ChangeState(new SeekFoodState(Animal));
 
     public override void ResolveCompleted() => Value = 100f;
@@ -27,6 +26,5 @@ public class HungerNeed : BaseNeed
 
             Animal.SetHunger(Value);
         }
-
     }
 }

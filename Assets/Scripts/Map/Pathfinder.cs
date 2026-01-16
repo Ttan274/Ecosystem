@@ -133,17 +133,17 @@ public class Pathfinder : MonoBehaviour
         return null;
     }
 
-    public Tile GetClosestWalkableToWaterTile(Tile waterTile)
+    public Tile GetClosestWalkableTile(Tile tile)
     {
         Tile closest = null;
         float minDist = Mathf.Infinity;
 
-        foreach (Tile neighbor in GetNeighbors(waterTile))
+        foreach (Tile neighbor in GetNeighbors(tile))
         {
             if (!neighbor.IsWalkable())
                 continue;
 
-            float distance = Vector3.Distance(waterTile.transform.position, neighbor.transform.position);
+            float distance = Vector3.Distance(tile.transform.position, neighbor.transform.position);
             if (distance < minDist)
             {
                 minDist = distance;

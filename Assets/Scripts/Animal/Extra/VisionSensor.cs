@@ -14,6 +14,7 @@ public class VisionSensor : MonoBehaviour
     private float scanTimer = 0;
     public List<GameObject> visibleTargets = new(); //Water
     public List<IFoodSource> foodSources = new();   //Food
+    public List<Animal> visibleAnimals = new();     //Other Animals
 
     //Reference
     private Animal animal;
@@ -37,6 +38,7 @@ public class VisionSensor : MonoBehaviour
     {
         visibleTargets.Clear();
         foodSources.Clear();
+        visibleAnimals.Clear();
 
         Collider[] targetsInview = Physics.OverlapSphere(
             transform.position,
@@ -44,22 +46,38 @@ public class VisionSensor : MonoBehaviour
 
         foreach (Collider coll in targetsInview)
         {
+            //Animal Check
+            Animal other;
+            if(coll.TryGetComponent(out other))
+            {
+                if(other != animal && !other.isDead)
+                {
+                    visibleAnimals.Add(other);
+                    animal.Remember(MemoryType.Mate, other, 8f);
+                }
+
+                continue;
+            }
+
+
+            //Tile Check
             Tile t;
             if (!coll.TryGetComponent(out t))
                 continue;
 
-            //Plant eklemek için ???
+            //Tile Food Check  ???? Herbivore özel burasý
             if (t.tileType == TileType.Ground && t.hasPlant && t.plant.IsAvailable)
             {
                 animal.Remember(MemoryType.Food, t.transform.position, 8f);
                 foodSources.Add(t.plant);
             }
 
-            if (t.tileType != TileType.Water)
-                continue;
-
-            animal.Remember(MemoryType.Water, t.transform.position, 8f);
-            visibleTargets.Add(coll.gameObject);
+            //Tile Water Check
+            if(t.tileType == TileType.Water)
+            {
+                animal.Remember(MemoryType.Water, t.transform.position, 8f);
+                visibleTargets.Add(coll.gameObject);
+            }
         }
     }
 

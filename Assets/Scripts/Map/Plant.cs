@@ -11,8 +11,8 @@ public class Plant : MonoBehaviour, IFoodSource
 
     public void Consume()
     {
-        isAlive = false;
         parentTile.ResetTile(Simulation.Instance.IsDroughtEnabled);
-        Destroy(gameObject);
+        isAlive = false;
+        gameObject.SetActive(false);
     }
 }
