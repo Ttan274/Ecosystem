@@ -14,14 +14,27 @@ public class SeekFoodState : IAnimalState
     {
         animal.searchIntent.Start(SearchIntentType.Food, 5f);
 
+        //Vision
         target = animal.GetClosestFood();
-
         if(target != null)
         {
             Tile current = Pathfinder.Instance.GetTileAtPosition(animal.transform.position);
             Tile destination = Pathfinder.Instance.GetTileAtPosition(target.FoodTransform.position);
             if (current != null && destination != null)
                 animal.SetPath(current, destination);
+            return;
+        }
+
+        //Memory
+        Vector3? memPos = animal.GetMemoryPosition(MemoryType.Food);
+        if(memPos.HasValue)
+        {
+            Tile current = Pathfinder.Instance.GetTileAtPosition(animal.transform.position);
+            Tile destination = Pathfinder.Instance.GetTileAtPosition(memPos.Value);
+
+            if (current != null && destination != null)
+                animal.SetPath(current, destination);
+            return;
         }
     }
 

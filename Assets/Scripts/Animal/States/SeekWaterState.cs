@@ -14,14 +14,28 @@ public class SeekWaterState : IAnimalState
     {
         animal.searchIntent.Start(SearchIntentType.Water, 5f);
 
+        //Vision
         targetWater = animal.GetClosestWater();
-
         if(targetWater != null)
         {
             Tile current = Pathfinder.Instance.GetTileAtPosition(animal.transform.position);
             Tile waterTile = Pathfinder.Instance.GetClosestWalkableToWaterTile(targetWater);
             if (current != null && waterTile != null)
                 animal.SetPath(current, waterTile);
+            return;
+        }
+
+        //Memory
+        Vector3? memPos = animal.GetMemoryPosition(MemoryType.Water);
+        if(memPos.HasValue)
+        {
+            Tile current = Pathfinder.Instance.GetTileAtPosition(animal.transform.position);
+            Tile tileAtPos = Pathfinder.Instance.GetTileAtPosition(memPos.Value);
+            Tile waterTile = Pathfinder.Instance.GetClosestWalkableToWaterTile(tileAtPos);
+
+            if (current != null && waterTile != null)
+                animal.SetPath(current, waterTile);
+            return;
         }
     }
 

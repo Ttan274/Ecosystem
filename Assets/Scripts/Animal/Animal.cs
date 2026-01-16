@@ -1,6 +1,7 @@
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class Animal : MonoBehaviour
 {
@@ -33,8 +34,9 @@ public class Animal : MonoBehaviour
     private Animator animator;
     protected bool canSearch = true;
 
-    [Header("Search Intent")]
+    [Header("Search Intent + Memory")]
     public SearchIntent searchIntent = new SearchIntent();
+    public List<MemoryEntry> memories = new List<MemoryEntry>();
 
     [Header("Hunger")]
     [SerializeField] private float hungerDecayRate;
@@ -119,6 +121,13 @@ public class Animal : MonoBehaviour
                                   || currentState is SeekFoodState
                                   || currentState is SeekWaterState);
 
+        for(int i = memories.Count - 1; i >= 0; i--)
+        {
+            memories[i].Update();
+            if (!memories[i].IsValid)
+                memories.RemoveAt(i);
+        }
+
         DeathCheck();
         searchIntent.Update();
         matingTimer += Time.deltaTime;
@@ -130,6 +139,38 @@ public class Animal : MonoBehaviour
         currentState = newState;
         currentState?.Enter();
     }
+
+    #region Memory
+
+    public void Remember(MemoryType type, Vector3 pos, float lifeTime)
+    {
+        //if same type exists, update it
+        foreach (MemoryEntry m in memories)
+        {
+            if(m.type == type)
+            {
+                m.position = pos;
+                m.timer = 0f;
+                m.maxLifeTime = lifeTime;
+                return;
+            }
+        }
+
+        //add if type not exists
+        memories.Add(new MemoryEntry(type, pos, lifeTime));
+    }
+
+    public Vector3? GetMemoryPosition(MemoryType type)
+    {
+        foreach (MemoryEntry m in memories)
+        {
+            if (m.type == type && m.IsValid)
+                return m.position;
+        }
+        return null;
+    }
+
+    #endregion
 
     #region Needs
     public virtual Animal FindClosestMate() { return null; }

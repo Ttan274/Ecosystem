@@ -12,13 +12,15 @@ public class VisionSensor : MonoBehaviour
     [Header("Scan Settings")]
     [SerializeField] private float scanInterval = 0.4f;
     private float scanTimer = 0;
-    private Transform owner;
     public List<GameObject> visibleTargets = new(); //Water
     public List<IFoodSource> foodSources = new();   //Food
 
+    //Reference
+    private Animal animal;
+
     private void Awake()
     {
-        owner = transform;
+       animal = GetComponent<Animal>();
     }
 
     private void Update()
@@ -37,7 +39,7 @@ public class VisionSensor : MonoBehaviour
         foodSources.Clear();
 
         Collider[] targetsInview = Physics.OverlapSphere(
-            owner.position,
+            transform.position,
             viewRadius);
 
         foreach (Collider coll in targetsInview)
@@ -48,11 +50,15 @@ public class VisionSensor : MonoBehaviour
 
             //Plant eklemek için ???
             if (t.tileType == TileType.Ground && t.hasPlant && t.plant.IsAvailable)
+            {
+                animal.Remember(MemoryType.Food, t.transform.position, 8f);
                 foodSources.Add(t.plant);
+            }
 
             if (t.tileType != TileType.Water)
                 continue;
 
+            animal.Remember(MemoryType.Water, t.transform.position, 8f);
             visibleTargets.Add(coll.gameObject);
         }
     }
