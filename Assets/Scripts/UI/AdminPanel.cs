@@ -16,7 +16,7 @@ public class AdminPanel : MonoBehaviour
     public void ShowHerbivores()
     {
         ClearTable();
-        var list = Simulation.Instance.herbivores;
+        var list = WorldManager.Instance.GetAnimalsBySpecies(SpeciesType.Herbivore);
         for (int i = 0; i < list.Count; i++)
             CreateRow(i, list[i]);
     }
@@ -24,7 +24,7 @@ public class AdminPanel : MonoBehaviour
     public void ShowCarnivores()
     {
         ClearTable();
-        var list = Simulation.Instance.carnivores;
+        var list = WorldManager.Instance.GetAnimalsBySpecies(SpeciesType.Carnivore);
         for (int i = 0; i < list.Count; i++)
             CreateRow(i, list[i]);
     }

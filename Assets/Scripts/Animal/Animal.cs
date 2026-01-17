@@ -12,7 +12,7 @@ public class Animal : MonoBehaviour
     public int childCount { get; protected set; } = 0;
     public int eatenObjectCount { get; protected set; } = 0;
     public DeathBehaviour deathBehaviour;
-    public int Species;
+    public SpeciesType Species;
     
     //Age
     public int age { get; private set; } = 0;
@@ -73,7 +73,7 @@ public class Animal : MonoBehaviour
     //Debug
     public bool showDebug = false;
 
-    public void Initialize(string aName, Gender g, bool isHerbivore)
+    public void Initialize(string aName, Gender g, SpeciesType speciesType)
     {
         gizmoColor = Random.ColorHSV();
         animUI = GetComponentInChildren<AnimalUI>();
@@ -88,7 +88,7 @@ public class Animal : MonoBehaviour
         //Animal specific data
         Id = globalId++;
         animalName = aName;
-        Species = isHerbivore ? 0 : 1;
+        Species = speciesType;
         gameObject.name = animalName;
         gender = g;
         maxAge = Random.Range(8, 15);
@@ -478,7 +478,7 @@ public class Animal : MonoBehaviour
 
     public virtual void Die()
     {
-        Simulation.Instance.RemoveAnimal(this);
+        WorldManager.Instance.KillAnimal(this, deathBehaviour.deathType);
         gameObject.SetActive(false);
     }
     
@@ -536,6 +536,13 @@ public class Animal : MonoBehaviour
             Gizmos.DrawLine(from, to);
         }
     }
+}
+
+public enum SpeciesType
+{
+    Herbivore,
+    Carnivore,
+    Omnivore
 }
 
 public enum Gender

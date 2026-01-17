@@ -33,13 +33,13 @@ public class InGameUI : MonoBehaviour
     public void CreateHerbivore(TMP_InputField field)
     {
         if (CanCreateEntity(field, out int size))
-            SpawnManager.Instance.GenerateAnimals(true, size);
+            WorldManager.Instance.RequestSpawnByUser(SpeciesType.Herbivore, size);
     }
 
     public void CreateCarnivore(TMP_InputField field)
     {
         if (CanCreateEntity(field, out int size))
-            SpawnManager.Instance.GenerateAnimals(false, size);
+            WorldManager.Instance.RequestSpawnByUser(SpeciesType.Carnivore, size);
     }
 
     public void CreatePlant(TMP_InputField field)
@@ -118,14 +118,14 @@ public class InGameUI : MonoBehaviour
     #endregion
 
     #region Disaster Control Region
-    public void ApplyDisease(bool isHerbivore) => Simulation.Instance.ApplyDisease(isHerbivore);
+    public void ApplyDisease(bool isHerbivore) => WorldManager.Instance.ApplyDisease(isHerbivore);
     
     public void StartDrought()
     {
         isDroughtActive = !isDroughtActive;
         droughtTxt.text = isDroughtActive ? "Stop Drought" : "Start Drought";
 
-        Simulation.Instance.StartDrought(isDroughtActive);
+        WorldManager.Instance.ApplyDrought(isDroughtActive);
     }
     #endregion
 }

@@ -7,14 +7,7 @@ public class Simulation : MonoBehaviour
     [SerializeField] private float interval;
     private float timer = 0f;
 
-    //Admin Related Data
-    [HideInInspector] public int diseaseApplied = 0;
-    [HideInInspector] public float droughtTimer = 0f;
-    public bool IsDroughtEnabled { get; private set; } = false;
-
     [Header("Holders")]
-    public List<Carnivore> carnivores = new List<Carnivore>();
-    public List<Herbivore> herbivores = new List<Herbivore>();
     private HashSet<int> addedAnimals = new HashSet<int>();
     public List<SimulationData> history { get; private set; }
     public static Simulation Instance;
@@ -33,56 +26,10 @@ public class Simulation : MonoBehaviour
 
     private void Update()
     {
-        if (IsDroughtEnabled)
-            droughtTimer += Time.deltaTime;
-
         timer += Time.deltaTime;
         if (timer >= interval)
             RecordData();
     }
-
-    #region Registeration Methods
-    public void RegisterAnimal(Animal animal)
-    {
-        if (animal is Herbivore)
-            herbivores.Add(animal as Herbivore);
-        else
-            carnivores.Add(animal as Carnivore);
-    }
-
-    public void RemoveAnimal(Animal animal)
-    {
-        if (animal is Herbivore)
-            herbivores.Remove(animal as Herbivore);
-        else
-            carnivores.Remove(animal as Carnivore);
-    }
-    #endregion
-
-    #region Admin Behaviours
-    public void ApplyDisease(bool isHerbivore)
-    {
-        int max = isHerbivore ? herbivores.Count : carnivores.Count;
-        if (max == 0)
-            return;
-        int rand = Random.Range(0, max);
-            
-        if(isHerbivore)
-        {
-            if (!herbivores[rand].isInfected)
-                herbivores[rand].Infect();
-        }
-        else
-        {
-            if (!carnivores[rand].isInfected)
-                carnivores[rand].Infect();
-        }
-
-        diseaseApplied++;
-    }
-
-    public void StartDrought(bool status) => IsDroughtEnabled = status;
-    #endregion
 
     #region Data region
     private void RecordData()
@@ -92,20 +39,20 @@ public class Simulation : MonoBehaviour
         var data = new SimulationData
         {
             time = Time.time,
-            droughtTimer = droughtTimer,
-            diseaseApplied = diseaseApplied,
-            herbivoreCount = herbivores.Count,
-            carnivoreCount = carnivores.Count,
+            droughtTimer = WorldManager.Instance.droughtTimer,
+            diseaseApplied = WorldManager.Instance.diseaseApplied,
+            herbivoreCount = WorldManager.Instance.Count(SpeciesType.Herbivore),
+            carnivoreCount = WorldManager.Instance.Count(SpeciesType.Carnivore),
         };
 
         history.Add(data);
     }
 
-    public List<AnimalStats> GatherAnimalData(List<Animal> allAnimals)
+    public List<AnimalStats> GatherAnimalData()
     {
         var animalHistory = new List<AnimalStats>();
 
-        foreach (var animal in allAnimals)
+        foreach (var animal in WorldManager.Instance.Animals)
         {
             if (addedAnimals.Contains(animal.Id)) continue;
 
@@ -117,7 +64,7 @@ public class Simulation : MonoBehaviour
                 age = animal.age,
                 eatenObjectCount = animal.eatenObjectCount,
                 childCount = animal.childCount,
-                type = animal is Herbivore ? "Herbivore" : "Carnivore"
+                type = animal.Species.ToString()
             };
 
             addedAnimals.Add(animal.Id);

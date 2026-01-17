@@ -16,7 +16,7 @@ public class Herbivore : Animal, IFoodSource
         matingTimer = 0;
 
         if (gender == Gender.Female)
-            SpawnManager.Instance.GenerateAnimal(true, transform.position);
+            WorldManager.Instance.RequestBirth(this);
     }
 
     public override bool CanEat(IFoodSource source) => source is Plant;

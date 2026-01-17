@@ -33,7 +33,7 @@ namespace Assets.Scripts
         {
             AnimalsWrapper animalsWrapper = new()
             {
-                animalsStats = Simulation.Instance.GatherAnimalData(SpawnManager.Instance.animalList)
+               // animalsStats = Simulation.Instance.GatherAnimalData(SpawnManager.Instance.animalList)
             };
 
             string json = JsonUtility.ToJson(animalsWrapper, true);
