@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +12,20 @@ public class Simulation : MonoBehaviour
     private HashSet<int> addedAnimals = new HashSet<int>();
     public List<SimulationData> history { get; private set; }
     public static Simulation Instance;
+
+    #region Enable/Disable
+    private void OnEnable()
+    {
+        WorldEvents.OnDayChanged += DayEnded;
+    }
+
+
+    private void OnDisable()
+    {
+        WorldEvents.OnDayChanged -= DayEnded;
+    }
+
+    #endregion
 
     private void Awake()
     {
@@ -29,6 +44,11 @@ public class Simulation : MonoBehaviour
         timer += Time.deltaTime;
         if (timer >= interval)
             RecordData();
+    }
+
+    private void DayEnded(int day)
+    {
+        //RecordData();
     }
 
     #region Data region

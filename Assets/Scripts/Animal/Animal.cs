@@ -73,6 +73,18 @@ public class Animal : MonoBehaviour
     //Debug
     public bool showDebug = false;
 
+    #region Enable/Disable
+    private void OnEnable()
+    {
+        WorldEvents.OnDayChanged += HandleDayChange;
+    }
+
+    private void OnDisable()
+    {
+        WorldEvents.OnDayChanged -= HandleDayChange;
+    }
+    #endregion
+
     public void Initialize(string aName, Gender g, SpeciesType speciesType)
     {
         gizmoColor = Random.ColorHSV();
@@ -92,7 +104,6 @@ public class Animal : MonoBehaviour
         gameObject.name = animalName;
         gender = g;
         maxAge = Random.Range(8, 15);
-        DayCycle.OnDayEnd += UpdateAge;
 
         //Default UI Bar
         animUI.SetGenderBar(gender);
@@ -505,6 +516,11 @@ public class Animal : MonoBehaviour
         }
     }
     #endregion
+
+    private void HandleDayChange(int day)
+    {
+        UpdateAge();
+    }
 
     protected void UpdateAge()
     {

@@ -58,15 +58,6 @@ public class Tile : MonoBehaviour
             plant.Initalize(this);
         }
     }
-
-    public void ResetTile(bool isDrought)
-    {
-        hasPlant = false;
-        plant = null;
-        
-        if(!isDrought)
-            MapGen.Instance.CreateBush();
-    }
 }
 
 public enum TileType

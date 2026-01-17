@@ -51,6 +51,8 @@ public class WorldManager : MonoBehaviour
             return;
 
         UnregisterAnimal(animal);
+        WorldEvents.RaiseAnimalDied(animal, reason);
+        
         //animal.OnKiled(reason);
     }
 
@@ -60,7 +62,9 @@ public class WorldManager : MonoBehaviour
             return;
 
         Animal baby = SpawnManager.Instance.SpawnAnimal(parent.Species, parent.transform.position);
+        
         RegisterAnimal(baby);
+        WorldEvents.RaiseAnimalBorn(baby);
     }
 
     public void RequestSpawnByUser(SpeciesType species, int count)
@@ -72,6 +76,7 @@ public class WorldManager : MonoBehaviour
 
             Gender gender = (i % 2 == 0) ? Gender.Male : Gender.Female;
             Animal a = SpawnManager.Instance.SpawnAnimal(species, gender);
+            
             RegisterAnimal(a);
         }
     }

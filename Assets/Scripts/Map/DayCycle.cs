@@ -9,9 +9,9 @@ public class DayCycle : MonoBehaviour
     [SerializeField] private Gradient lightColor;
     [SerializeField] private AnimationCurve lightIntensity;
     [SerializeField] private float dayLength = 60f;
+   
     private float dayTimer = 0f;
     private int dayCount = 0;
-    public static System.Action OnDayEnd;    
 
     private void Update()
     {
@@ -20,7 +20,7 @@ public class DayCycle : MonoBehaviour
         {
             dayTimer = 0f;
             dayCount++;
-            OnDayEnd?.Invoke();
+            WorldEvents.RaiseDayChanged(dayCount);
         }
         UpdateLight();
         UpdateDayInfo();

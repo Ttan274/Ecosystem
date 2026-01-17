@@ -151,7 +151,7 @@ public class MapGen : MonoBehaviour
     #endregion
 
     #region Utility Methods
-    public List<Tile> ShuffleGroundTiles()
+    private List<Tile> ShuffleGroundTiles()
     {
         List<Tile> groundTiles = new List<Tile>();
         for (int x = 0; x < width; x++)
