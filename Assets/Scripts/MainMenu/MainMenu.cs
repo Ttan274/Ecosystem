@@ -7,13 +7,14 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private GameObject mainMenuPanel;
     [SerializeField] private GameObject documentationPanel;
 
-    public void StartSimulation() => SceneManager.LoadScene("FoodChain");
-
     public void OpenDocumentationPanel(bool status)
     {
         mainMenuPanel.SetActive(!status);
         documentationPanel.SetActive(status); 
     }
 
+    #region Enter/Exit Simulation
+    public void StartSimulation() => SceneManager.LoadScene("FoodChain");
     public void ExitGame() => Application.Quit();
+    #endregion
 }

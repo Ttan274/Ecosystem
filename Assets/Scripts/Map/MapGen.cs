@@ -13,6 +13,10 @@ public class MapGen : MonoBehaviour
     [SerializeField] private PlantableObject tree;
     [SerializeField] private PlantableObject bush;
 
+    //References
+    private MapSettings settings;
+
+    //Internal Map Data
     private Tile[,] tiles;
     private bool[,] lakeMap;
     public static MapGen Instance;
@@ -34,6 +38,29 @@ public class MapGen : MonoBehaviour
         lakeMap = new bool[width, height];
         Generate();
     }
+
+    private void Initialize(MapSettings s)
+    {
+        settings = s;
+        ApplySettings();
+    }
+
+    private void ApplySettings()
+    {
+        //Map
+        width = settings.width;
+        height = settings.height;
+        lakeCount = settings.lakeCount;
+        lakeRadius = settings.lakeRadius;
+        irregularity = settings.irregularity;
+
+        //Plantables
+        tree.maxCount = settings.tree.maxCount;
+        tree.spawnChance = settings.tree.spawnChance;
+        bush.maxCount = settings.bush.maxCount;
+        bush.spawnChance = settings.bush.spawnChance;
+    }
+
 
     #region MapGeneration Methods
     private void Generate()

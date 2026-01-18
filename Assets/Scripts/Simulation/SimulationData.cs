@@ -9,6 +9,7 @@ public class SimulationData
     public int diseaseApplied;
     public int herbivoreCount;
     public int carnivoreCount;
+    public int dayCount;
 }
 
 [System.Serializable]

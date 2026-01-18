@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class Simulation : MonoBehaviour
@@ -7,6 +7,7 @@ public class Simulation : MonoBehaviour
     [Header("Simulation Data")]
     [SerializeField] private float interval;
     private float timer = 0f;
+    private int day = 0;
 
     [Header("Holders")]
     private HashSet<int> addedAnimals = new HashSet<int>();
@@ -49,6 +50,7 @@ public class Simulation : MonoBehaviour
     private void DayEnded(int day)
     {
         //RecordData();
+        this.day = day;
     }
 
     #region Data region
@@ -63,6 +65,7 @@ public class Simulation : MonoBehaviour
             diseaseApplied = WorldManager.Instance.diseaseApplied,
             herbivoreCount = WorldManager.Instance.Count(SpeciesType.Herbivore),
             carnivoreCount = WorldManager.Instance.Count(SpeciesType.Carnivore),
+            dayCount = day
         };
 
         history.Add(data);
@@ -107,13 +110,14 @@ public class Simulation : MonoBehaviour
         File.WriteAllText(path, csv.ToString());
         Debug.Log($"Simulation data exported to {path}");
     }
+    }*/
 
     public void ExportToJSON(string fileName = "SimStats.json")
     {
-        string json = JsonUtility.ToJson(new Wrapper { data = history}, true);
-        string path = Path.Combine(Application.persistentDataPath, fileName);
+        string json = JsonUtility.ToJson(new Wrapper { data = history }, true);
+        string path = Path.Combine(Application.dataPath, fileName);
         File.WriteAllText(path, json);
         Debug.Log($"Simulation data exported to {path}");
-    }*/
+    }
     #endregion
 }

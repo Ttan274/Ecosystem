@@ -1,0 +1,20 @@
+{
+    "data": [
+        {
+            "time": 9.98060131072998,
+            "droughtTimer": 0.0,
+            "diseaseApplied": 0,
+            "herbivoreCount": 10,
+            "carnivoreCount": 4,
+            "dayCount": 0
+        },
+        {
+            "time": 20.03193473815918,
+            "droughtTimer": 0.0,
+            "diseaseApplied": 0,
+            "herbivoreCount": 10,
+            "carnivoreCount": 4,
+            "dayCount": 0
+        }
+    ]
+}

@@ -8,8 +8,10 @@ namespace Assets.Scripts
     {
         public void UploadStatsToServer()
         {
-            StartCoroutine(SendStats());
-            StartCoroutine(SendAnimalStats());
+            Simulation.Instance.ExportToJSON();
+
+            //StartCoroutine(SendStats());
+            //StartCoroutine(SendAnimalStats());
         }
 
         private IEnumerator SendStats()
