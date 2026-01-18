@@ -21,16 +21,25 @@ The system is intentionally designed so that:
 - Events are used for **observation, analytics, and UI**, not core logic
 - Entities react to the world rather than following scripted paths
 
----
++------------------------------------------------------+
+|                   UI / Admin Panel                   |
+|           (Observation & Manual Control)             |
++------------------------------+-----------------------+
+                               |
+                               | subscribes to events
+                               v
++------------------------------------------------------+
+|                   Event System                       |
+|                (WorldEvents Hub)                     |
++------------------------------------------------------+
 
-flowchart TB
-
-UI[UI / Admin Panel<br/>(Observer & Control)]
-EVENTS[Event System<br/>(WorldEvents Hub)]
-CORE[Simulation Core<br/>World • Plants • Animals]
-
-CORE -->|raises events| EVENTS
-EVENTS -->|subscribes| UI
++------------------------------------------------------+
+|                  Simulation Core                     |
+|------------------------------------------------------|
+|  World / Map System                                  |
+|  Plant System                                        |
+|  Animal System                                       |
++------------------------------------------------------+
 
 ---
 
@@ -122,6 +131,24 @@ However, the system is designed to later support:
 
 Memory exists as a foundation for more advanced emergent behavior.
 
++----------------------+
+|    Vision Sensor     |
+|   (Radius-Based)     |
++----------+-----------+
+           |
+           v
++----------------------+
+|  Detected Entities   |
++----------+-----------+
+           |
+           v
++----------------------+
+|   Short-Term Memory  |
++----------+-----------+
+           |
+           v
+     Decision Influence
+
 ---
 
 ## 6. Behavior Architecture (FSM + Needs)
@@ -169,16 +196,31 @@ This allows:
 - Priority-based behavior
 - Easier extension without rigid transition graphs
 
----
++--------------------------------------+
+|             Need System               |
+|           (Decision Layer)            |
+|---------------------------------------|
+|  Hunger                               |
+|  Thirst                               |
+|  Mate Urge                            |
++----------------------+---------------+
+                       |
+                       | selects dominant need
+                       v
++--------------------------------------+
+|              FSM States               |
+|           (Execution Layer)           |
+|---------------------------------------|
+|  Wander                               |
+|  Seek Food                            |
+|  Seek Water                           |
+|  Eat                                  |
+|  Die                                  |
++----------------------+---------------+
+                       |
+                       v
+                Movement / Action
 
-flowchart TB
-
-NEEDS[Need System<br/>(Decision Layer)<br/><br/>Hunger<br/>Thirst<br/>Mate Urge]
-FSM[FSM States<br/>(Execution Layer)<br/><br/>Wander<br/>Seek Food<br/>Seek Water<br/>Eat<br/>Die]
-ACTION[Movement / Action]
-
-NEEDS -->|selects dominant need| FSM
-FSM --> ACTION
 
 ---
 
@@ -225,21 +267,21 @@ Instead, they are used for:
 
 This separation ensures that simulation behavior remains deterministic and debuggable.
 
----
-
-flowchart TB
-
-CORE[Simulation Core]
-EVENTS[WorldEvents Hub]
-
-UI[UI]
-STATS[Statistics / Analytics]
-ADMIN[Admin Panel]
-
-CORE -->|raises event| EVENTS
-EVENTS --> UI
-EVENTS --> STATS
-EVENTS --> ADMIN
++------------------------+
+|    Simulation Core     |
++-----------+------------+
+            |
+            | raises events
+            v
++------------------------+
+|    WorldEvents Hub     |
++-----------+------------+
+            |
+            +--> UI
+            |
+            +--> Statistics / Analytics
+            |
+            +--> Admin Panel
 
 ---
 
