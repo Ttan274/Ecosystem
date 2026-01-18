@@ -21,6 +21,7 @@ The system is intentionally designed so that:
 - Events are used for **observation, analytics, and UI**, not core logic
 - Entities react to the world rather than following scripted paths
 
+```text
 +------------------------------------------------------+
 |                   UI / Admin Panel                   |
 |           (Observation & Manual Control)             |
@@ -131,6 +132,7 @@ However, the system is designed to later support:
 
 Memory exists as a foundation for more advanced emergent behavior.
 
+```text
 +----------------------+
 |    Vision Sensor     |
 |   (Radius-Based)     |
@@ -196,6 +198,7 @@ This allows:
 - Priority-based behavior
 - Easier extension without rigid transition graphs
 
+```text
 +--------------------------------------+
 |             Need System               |
 |           (Decision Layer)            |
@@ -267,6 +270,7 @@ Instead, they are used for:
 
 This separation ensures that simulation behavior remains deterministic and debuggable.
 
+```text
 +------------------------+
 |    Simulation Core     |
 +-----------+------------+
