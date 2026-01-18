@@ -41,6 +41,7 @@ The system is intentionally designed so that:
 |  Plant System                                        |
 |  Animal System                                       |
 +------------------------------------------------------+
+```
 
 ---
 
@@ -150,6 +151,7 @@ Memory exists as a foundation for more advanced emergent behavior.
            |
            v
      Decision Influence
+```
 
 ---
 
@@ -223,7 +225,7 @@ This allows:
                        |
                        v
                 Movement / Action
-
+```
 
 ---
 
@@ -286,6 +288,7 @@ This separation ensures that simulation behavior remains deterministic and debug
             +--> Statistics / Analytics
             |
             +--> Admin Panel
+```
 
 ---
 
