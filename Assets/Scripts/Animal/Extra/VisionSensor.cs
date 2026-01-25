@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,12 +5,12 @@ public class VisionSensor : MonoBehaviour
 {
     [Header("Vision Settings")]
     [SerializeField] private float viewRadius;
-    [Range(0f, 360f)]
-    [SerializeField] private float viewAngle;
 
     [Header("Scan Settings")]
     [SerializeField] private float scanInterval = 0.4f;
     private float scanTimer = 0;
+
+    //Detected Targets
     public List<GameObject> visibleTargets = new(); //Water
     public List<IFoodSource> foodSources = new();   //Food (Plant, Herbivore)
     public List<Animal> visibleAnimals = new();     //Mate
@@ -54,27 +53,35 @@ public class VisionSensor : MonoBehaviour
                 {
                     //Mate Check
                     visibleAnimals.Add(other);
-                    animal.Remember(MemoryType.Mate, other, 8f);
+                    if(animal.CanMate(other))
+                        animal.Remember(MemoryType.Mate, other, 8f);
 
-
-                    //Food Check ???? Carnivore özel burasý
+                    //Food Check (Carnivore)
                     IFoodSource source = other as IFoodSource;
                     if (source != null && source.IsAvailable)
-                        foodSources.Add(source);
+                    {
+                        if(animal.CanEat(source))
+                        {
+                            foodSources.Add(source);
+                            animal.Remember(MemoryType.Food, other, 8f);
+                        }
+                    }
                 }
                 continue;
             }
 
             //Tile Check
-            Tile t;
-            if (!coll.TryGetComponent(out t))
+            if (!coll.TryGetComponent(out Tile t))
                 continue;
 
-            //Tile Food Check  ???? Herbivore özel burasý
+            //Tile Food Check (Herbivore)
             if (t.tileType == TileType.Ground && t.hasPlant && t.plant.IsAvailable)
             {
-                animal.Remember(MemoryType.Food, t.transform.position, 8f);
-                foodSources.Add(t.plant);
+                if(animal.CanEat(t.plant))
+                {
+                    animal.Remember(MemoryType.Food, t.transform.position, 8f);
+                    foodSources.Add(t.plant);
+                }
             }
 
             //Tile Water Check

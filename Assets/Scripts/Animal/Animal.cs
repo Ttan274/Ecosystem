@@ -72,6 +72,7 @@ public class Animal : MonoBehaviour
 
     //Debug
     public bool showDebug = false;
+    public ParentData parentData;
 
     #region Enable/Disable
     private void OnEnable()
@@ -85,7 +86,7 @@ public class Animal : MonoBehaviour
     }
     #endregion
 
-    public void Initialize(string aName, Gender g, SpeciesType speciesType)
+    public void Initialize(string aName, Gender g, SpeciesType speciesType, ParentData data)
     {
         gizmoColor = Random.ColorHSV();
         animUI = GetComponentInChildren<AnimalUI>();
@@ -104,6 +105,7 @@ public class Animal : MonoBehaviour
         gameObject.name = animalName;
         gender = g;
         maxAge = Random.Range(8, 15);
+        parentData = new ParentData(data.motherName, data.fatherName);
 
         //Default UI Bar
         animUI.SetGenderBar(gender);
@@ -153,7 +155,6 @@ public class Animal : MonoBehaviour
     }
 
     #region Memory
-
     public void Remember(MemoryType type, Vector3 pos, float lifeTime)
     {
         Forget(type);
@@ -186,7 +187,7 @@ public class Animal : MonoBehaviour
     {
         foreach (MemoryEntry m in memories)
         {
-            if (m.type == MemoryType.Mate && m.IsValid && m.IsEntity)
+            if (m.type == type && m.IsValid && m.IsEntity)
                 return m.entity;
         }
         return null;
@@ -205,7 +206,14 @@ public class Animal : MonoBehaviour
     #endregion
 
     #region Needs
-    public virtual void Breed() { }     //??
+    public void Breed(Animal mate) 
+    {
+        childCount++;
+        matingTimer = 0;
+
+        if (gender == Gender.Female)
+            WorldManager.Instance.RequestBirth(this, mate);
+    }     
 
     public BaseNeed GetMostUrgentNeed()
     {
@@ -405,16 +413,18 @@ public class Animal : MonoBehaviour
         return closest;
     }
 
-    private bool CanMate(Animal other)
+    public bool CanMate(Animal other)
     {
-        //If other is null or same itself then cannot mate
-        if (other == null ||other == this ) return false;
-
-        //If other has mate or same gender they cannot mate
-        if (other.hasMate || other.gender == gender) return false;
-
+        //If other is null cannot mate
+        if (other == null) return false;
+        //If other is dead cannot mate
+        if (other.isDead) return false;
+        //If other has same gender cannot mate
+        if (this.gender == other.gender) return false;
+        //If other has mate  cannot mate
+        if (other.hasMate) return false;
         //Check species both are different then they cannot mate
-        if (other.Species != Species) return false;
+        if (other.Species != this.Species) return false;
 
         return true;
     }
@@ -422,7 +432,19 @@ public class Animal : MonoBehaviour
     #endregion
 
     #region Food & Water
-    public virtual bool CanEat(IFoodSource source) { return false; }
+    public bool CanEat(IFoodSource source)
+    {
+        if (source == null || !source.IsAvailable)
+            return false;
+
+        if (Species == SpeciesType.Herbivore && source is Plant)
+            return true;
+
+        if(Species == SpeciesType.Carnivore && source is Herbivore)
+            return true;
+
+        return false;
+    }
 
     public void Eat() 
     {
@@ -529,7 +551,7 @@ public class Animal : MonoBehaviour
 
         nextAgeCounter++;
 
-        if (nextAgeCounter >= 3)
+        if (nextAgeCounter >= 2)
         {
             nextAgeCounter = 0;
             age++;
@@ -551,6 +573,33 @@ public class Animal : MonoBehaviour
             Vector3 to = currentPath[i + 1].transform.position + Vector3.up * 0.1f;
             Gizmos.DrawLine(from, to);
         }
+    }
+}
+
+[System.Serializable]
+public struct ParentData
+{
+    public int motherId;
+    public int fatherId;
+    public string motherName;
+    public string fatherName;
+
+    public ParentData(string m, string f)
+    {
+        motherId = -1;
+        fatherId = -1;
+
+        motherName = m;
+        fatherName = f;
+    }
+
+    public ParentData(Animal m, Animal f)
+    {
+        motherId = m.Id;
+        fatherId = f.Id;
+
+        motherName = m.animalName;
+        fatherName = f.animalName;
     }
 }
 

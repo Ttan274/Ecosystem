@@ -11,6 +11,7 @@ public class WorldManager : MonoBehaviour
 
     public static WorldManager Instance { get; private set; }
     public readonly List<Animal> Animals = new();
+    public readonly List<Animal> AllAnimals = new();
     
     private void Awake()
     {
@@ -34,6 +35,9 @@ public class WorldManager : MonoBehaviour
     {
         if (!Animals.Contains(animal))
             Animals.Add(animal);
+
+        if(!AllAnimals.Contains(animal))
+            AllAnimals.Add(animal);
     }
 
     public void UnregisterAnimal(Animal animal)
@@ -52,16 +56,19 @@ public class WorldManager : MonoBehaviour
 
         UnregisterAnimal(animal);
         WorldEvents.RaiseAnimalDied(animal, reason);
-        
-        //animal.OnKiled(reason);
     }
 
-    public void RequestBirth(Animal parent)
+    public void RequestBirth(Animal mother, Animal father)
     {
-        if (!CanSpawn(parent.Species))
+        Debug.Assert(mother.gender == Gender.Female, "Mother is not female");
+        Debug.Assert(father.gender == Gender.Male, "Father is not male");
+        Debug.Assert(mother.Species == father.Species, "Cross-Species birth");
+
+        if (!CanSpawn(mother.Species))
             return;
 
-        Animal baby = SpawnManager.Instance.SpawnAnimal(parent.Species, parent.transform.position);
+        ParentData data = new ParentData(mother, father);
+        Animal baby = SpawnManager.Instance.SpawnAnimal(mother.Species, mother.transform.position, data);
         
         RegisterAnimal(baby);
         WorldEvents.RaiseAnimalBorn(baby);

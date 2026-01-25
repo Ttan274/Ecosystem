@@ -14,6 +14,10 @@ public class Simulation : MonoBehaviour
     public List<SimulationData> history { get; private set; }
     public static Simulation Instance;
 
+    //FileNames
+    public const string simDataFileName = "SimStats.json";
+    public const string simAnimalDataFileName = "SimAnimalStats.json";
+
     #region Enable/Disable
     private void OnEnable()
     {
@@ -65,7 +69,9 @@ public class Simulation : MonoBehaviour
             diseaseApplied = WorldManager.Instance.diseaseApplied,
             herbivoreCount = WorldManager.Instance.Count(SpeciesType.Herbivore),
             carnivoreCount = WorldManager.Instance.Count(SpeciesType.Carnivore),
-            dayCount = day
+            dayCount = day,
+            totalHerbivoreCount = WorldManager.Instance.AllAnimals.FindAll(a => a.Species == SpeciesType.Herbivore).Count,
+            totalCarnivoreCount = WorldManager.Instance.AllAnimals.FindAll(a => a.Species == SpeciesType.Carnivore).Count
         };
 
         history.Add(data);
@@ -75,7 +81,7 @@ public class Simulation : MonoBehaviour
     {
         var animalHistory = new List<AnimalStats>();
 
-        foreach (var animal in WorldManager.Instance.Animals)
+        foreach (var animal in WorldManager.Instance.AllAnimals)
         {
             if (addedAnimals.Contains(animal.Id)) continue;
 
@@ -87,7 +93,9 @@ public class Simulation : MonoBehaviour
                 age = animal.age,
                 eatenObjectCount = animal.eatenObjectCount,
                 childCount = animal.childCount,
-                type = animal.Species.ToString()
+                type = animal.Species.ToString(),
+                motherName = animal.parentData.motherName,
+                fatherName = animal.parentData.fatherName
             };
 
             addedAnimals.Add(animal.Id);
@@ -112,12 +120,20 @@ public class Simulation : MonoBehaviour
     }
     }*/
 
-    public void ExportToJSON(string fileName = "SimStats.json")
+    public void ExportToJSON()
     {
-        string json = JsonUtility.ToJson(new Wrapper { data = history }, true);
-        string path = Path.Combine(Application.dataPath, fileName);
-        File.WriteAllText(path, json);
-        Debug.Log($"Simulation data exported to {path}");
+        //Export Simulation Data
+        string jsonSimData = JsonUtility.ToJson(new Wrapper { data = history }, true);
+        string pathSimData = Path.Combine(Application.dataPath, simDataFileName);
+
+        //Export Animal Data
+        string jsonSimAnimalData = JsonUtility.ToJson(new AnimalsWrapper { animalsStats = GatherAnimalData() }, true);
+        string pathSimAnimalData = Path.Combine(Application.dataPath, simAnimalDataFileName);
+
+        //Write Files
+        File.WriteAllText(pathSimData, jsonSimData);
+        File.WriteAllText(pathSimAnimalData, jsonSimAnimalData);
+        //Debug.Log($"Simulation data exported to {path}");
     }
     #endregion
 }

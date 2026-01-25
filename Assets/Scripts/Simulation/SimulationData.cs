@@ -10,6 +10,8 @@ public class SimulationData
     public int herbivoreCount;
     public int carnivoreCount;
     public int dayCount;
+    public int totalHerbivoreCount;
+    public int totalCarnivoreCount;
 }
 
 [System.Serializable]
@@ -22,6 +24,8 @@ public class AnimalStats
     public int age;
     public int eatenObjectCount;
     public int childCount;
+    public string motherName;
+    public string fatherName;
 }
 
 

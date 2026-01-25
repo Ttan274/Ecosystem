@@ -1,20 +1,194 @@
 {
     "data": [
         {
-            "time": 9.98060131072998,
+            "time": 16.068992614746095,
             "droughtTimer": 0.0,
             "diseaseApplied": 0,
             "herbivoreCount": 10,
             "carnivoreCount": 4,
-            "dayCount": 0
+            "dayCount": 0,
+            "totalHerbivoreCount": 10,
+            "totalCarnivoreCount": 4
         },
         {
-            "time": 20.03193473815918,
+            "time": 26.147703170776368,
             "droughtTimer": 0.0,
             "diseaseApplied": 0,
             "herbivoreCount": 10,
             "carnivoreCount": 4,
-            "dayCount": 0
+            "dayCount": 0,
+            "totalHerbivoreCount": 10,
+            "totalCarnivoreCount": 4
+        },
+        {
+            "time": 36.202850341796878,
+            "droughtTimer": 0.0,
+            "diseaseApplied": 0,
+            "herbivoreCount": 10,
+            "carnivoreCount": 4,
+            "dayCount": 0,
+            "totalHerbivoreCount": 10,
+            "totalCarnivoreCount": 4
+        },
+        {
+            "time": 46.2634162902832,
+            "droughtTimer": 0.0,
+            "diseaseApplied": 0,
+            "herbivoreCount": 9,
+            "carnivoreCount": 4,
+            "dayCount": 1,
+            "totalHerbivoreCount": 10,
+            "totalCarnivoreCount": 4
+        },
+        {
+            "time": 56.29372024536133,
+            "droughtTimer": 0.0,
+            "diseaseApplied": 0,
+            "herbivoreCount": 9,
+            "carnivoreCount": 4,
+            "dayCount": 1,
+            "totalHerbivoreCount": 10,
+            "totalCarnivoreCount": 4
+        },
+        {
+            "time": 66.30061340332031,
+            "droughtTimer": 0.0,
+            "diseaseApplied": 0,
+            "herbivoreCount": 9,
+            "carnivoreCount": 4,
+            "dayCount": 1,
+            "totalHerbivoreCount": 10,
+            "totalCarnivoreCount": 4
+        },
+        {
+            "time": 76.35435485839844,
+            "droughtTimer": 0.0,
+            "diseaseApplied": 0,
+            "herbivoreCount": 7,
+            "carnivoreCount": 4,
+            "dayCount": 2,
+            "totalHerbivoreCount": 10,
+            "totalCarnivoreCount": 4
+        },
+        {
+            "time": 86.35916137695313,
+            "droughtTimer": 0.0,
+            "diseaseApplied": 0,
+            "herbivoreCount": 7,
+            "carnivoreCount": 4,
+            "dayCount": 2,
+            "totalHerbivoreCount": 10,
+            "totalCarnivoreCount": 4
+        },
+        {
+            "time": 96.39857482910156,
+            "droughtTimer": 0.0,
+            "diseaseApplied": 0,
+            "herbivoreCount": 7,
+            "carnivoreCount": 4,
+            "dayCount": 2,
+            "totalHerbivoreCount": 10,
+            "totalCarnivoreCount": 4
+        },
+        {
+            "time": 106.4301528930664,
+            "droughtTimer": 0.0,
+            "diseaseApplied": 0,
+            "herbivoreCount": 7,
+            "carnivoreCount": 2,
+            "dayCount": 3,
+            "totalHerbivoreCount": 11,
+            "totalCarnivoreCount": 4
+        },
+        {
+            "time": 116.45730590820313,
+            "droughtTimer": 0.0,
+            "diseaseApplied": 0,
+            "herbivoreCount": 8,
+            "carnivoreCount": 1,
+            "dayCount": 3,
+            "totalHerbivoreCount": 12,
+            "totalCarnivoreCount": 4
+        },
+        {
+            "time": 126.51445007324219,
+            "droughtTimer": 0.0,
+            "diseaseApplied": 0,
+            "herbivoreCount": 7,
+            "carnivoreCount": 1,
+            "dayCount": 3,
+            "totalHerbivoreCount": 13,
+            "totalCarnivoreCount": 4
+        },
+        {
+            "time": 136.57281494140626,
+            "droughtTimer": 0.0,
+            "diseaseApplied": 0,
+            "herbivoreCount": 7,
+            "carnivoreCount": 1,
+            "dayCount": 4,
+            "totalHerbivoreCount": 14,
+            "totalCarnivoreCount": 4
+        },
+        {
+            "time": 146.58106994628907,
+            "droughtTimer": 0.0,
+            "diseaseApplied": 0,
+            "herbivoreCount": 6,
+            "carnivoreCount": 1,
+            "dayCount": 4,
+            "totalHerbivoreCount": 14,
+            "totalCarnivoreCount": 4
+        },
+        {
+            "time": 156.5857391357422,
+            "droughtTimer": 0.0,
+            "diseaseApplied": 0,
+            "herbivoreCount": 7,
+            "carnivoreCount": 1,
+            "dayCount": 4,
+            "totalHerbivoreCount": 16,
+            "totalCarnivoreCount": 4
+        },
+        {
+            "time": 166.6255645751953,
+            "droughtTimer": 0.0,
+            "diseaseApplied": 0,
+            "herbivoreCount": 7,
+            "carnivoreCount": 1,
+            "dayCount": 5,
+            "totalHerbivoreCount": 17,
+            "totalCarnivoreCount": 4
+        },
+        {
+            "time": 176.66712951660157,
+            "droughtTimer": 0.0,
+            "diseaseApplied": 0,
+            "herbivoreCount": 6,
+            "carnivoreCount": 1,
+            "dayCount": 5,
+            "totalHerbivoreCount": 18,
+            "totalCarnivoreCount": 4
+        },
+        {
+            "time": 186.67660522460938,
+            "droughtTimer": 0.0,
+            "diseaseApplied": 0,
+            "herbivoreCount": 5,
+            "carnivoreCount": 1,
+            "dayCount": 5,
+            "totalHerbivoreCount": 18,
+            "totalCarnivoreCount": 4
+        },
+        {
+            "time": 196.6902313232422,
+            "droughtTimer": 0.0,
+            "diseaseApplied": 0,
+            "herbivoreCount": 5,
+            "carnivoreCount": 1,
+            "dayCount": 6,
+            "totalHerbivoreCount": 19,
+            "totalCarnivoreCount": 4
         }
     ]
 }

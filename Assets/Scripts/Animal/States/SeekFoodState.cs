@@ -54,21 +54,7 @@ public class SeekFoodState : IAnimalState
         //Dynamic Food Source
         if(prey != null)
         {
-            if (prey == null || prey.isDead || !prey.gameObject.activeInHierarchy)
-            {
-                animal.ChangeState(new WanderState(animal));
-                return;
-            }
-
-            float distance = Vector3.Distance(animal.transform.position, prey.transform.position);
-            if (distance <= animal.eatDistance)
-            {
-                prey.Consume();
-                animal.searchIntent.Clear();
-                animal.ChangeState(new EatState(animal));
-                return;
-            }
-
+            EatPreyHelper();
             animal.ChaseEntity(prey);
             return;
         }
@@ -76,21 +62,7 @@ public class SeekFoodState : IAnimalState
         //Static Food Source
         if(plantTile != null)
         {
-            if (!plantTile.hasPlant || !plantTile.plant.IsAvailable)
-            {
-                animal.ChangeState(new WanderState(animal));
-                return;
-            }
-
-            float distance = Vector3.Distance(animal.transform.position, plantTile.transform.position);
-            if(distance <= animal.eatDistance)
-            {
-                plantTile.plant.Consume();
-                animal.searchIntent.Clear();
-                animal.ChangeState(new EatState(animal));
-                return;
-            }
-
+            EatPlantHelper();
             animal.FollowPath();
             return;
         }
@@ -101,17 +73,55 @@ public class SeekFoodState : IAnimalState
     }
 
     //Helpers
+    private void EatPreyHelper()
+    {
+        if (prey == null || prey.isDead || !prey.gameObject.activeInHierarchy)
+        {
+            animal.ChangeState(new WanderState(animal));
+            return;
+        }
+
+        float distance = Vector3.Distance(animal.transform.position, prey.transform.position);
+        if (distance <= animal.eatDistance)
+        {
+            prey.Consume();
+            animal.searchIntent.Clear();
+            animal.ChangeState(new EatState(animal));
+            return;
+        }
+    }
+
+    private void EatPlantHelper()
+    {
+        if (!plantTile.hasPlant || !plantTile.plant.IsAvailable)
+        {
+            animal.ChangeState(new WanderState(animal));
+            return;
+        }
+
+        float distance = Vector3.Distance(animal.transform.position, plantTile.transform.position);
+        if (distance <= animal.eatDistance)
+        {
+            plantTile.plant.Consume();
+            animal.searchIntent.Clear();
+            animal.ChangeState(new EatState(animal));
+            return;
+        }
+    }
+
     private void ResolveFoodType(IFoodSource source)
     {
         if(source is Animal a)
         {
             prey = a as Herbivore;
             plantTile = null;
+            Debug.Log("Yemek herbivore");
         }
         else
         {
             prey = null;
             plantTile = Pathfinder.Instance.GetTileAtPosition(source.FoodTransform.position);
+            Debug.Log("Yemek bitki");
             SetPathToFood();
         }
     }

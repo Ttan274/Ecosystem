@@ -1,0 +1,257 @@
+{
+    "animalsStats": [
+        {
+            "type": "Herbivore",
+            "name": "Ember-20",
+            "gender": "Male",
+            "deadType": "Predator",
+            "age": 0,
+            "eatenObjectCount": 1,
+            "childCount": 0,
+            "motherName": "User",
+            "fatherName": "User"
+        },
+        {
+            "type": "Herbivore",
+            "name": "Blaze-79",
+            "gender": "Female",
+            "deadType": "Predator",
+            "age": 1,
+            "eatenObjectCount": 5,
+            "childCount": 1,
+            "motherName": "User",
+            "fatherName": "User"
+        },
+        {
+            "type": "Herbivore",
+            "name": "Bubbles-52",
+            "gender": "Male",
+            "deadType": "Predator",
+            "age": 1,
+            "eatenObjectCount": 5,
+            "childCount": 3,
+            "motherName": "User",
+            "fatherName": "User"
+        },
+        {
+            "type": "Herbivore",
+            "name": "Whisper-69",
+            "gender": "Female",
+            "deadType": "HungerORThirst",
+            "age": 2,
+            "eatenObjectCount": 8,
+            "childCount": 6,
+            "motherName": "User",
+            "fatherName": "User"
+        },
+        {
+            "type": "Herbivore",
+            "name": "Ash-36",
+            "gender": "Male",
+            "deadType": "Predator",
+            "age": 1,
+            "eatenObjectCount": 2,
+            "childCount": 0,
+            "motherName": "User",
+            "fatherName": "User"
+        },
+        {
+            "type": "Herbivore",
+            "name": "Scales-81",
+            "gender": "Female",
+            "deadType": "Predator",
+            "age": 1,
+            "eatenObjectCount": 4,
+            "childCount": 0,
+            "motherName": "User",
+            "fatherName": "User"
+        },
+        {
+            "type": "Herbivore",
+            "name": "Bubbles-86",
+            "gender": "Male",
+            "deadType": "Predator",
+            "age": 0,
+            "eatenObjectCount": 2,
+            "childCount": 0,
+            "motherName": "User",
+            "fatherName": "User"
+        },
+        {
+            "type": "Herbivore",
+            "name": "Zippy-23",
+            "gender": "Female",
+            "deadType": "HungerORThirst",
+            "age": 2,
+            "eatenObjectCount": 5,
+            "childCount": 1,
+            "motherName": "User",
+            "fatherName": "User"
+        },
+        {
+            "type": "Herbivore",
+            "name": "Whisper-79",
+            "gender": "Male",
+            "deadType": "Predator",
+            "age": 0,
+            "eatenObjectCount": 2,
+            "childCount": 0,
+            "motherName": "User",
+            "fatherName": "User"
+        },
+        {
+            "type": "Herbivore",
+            "name": "Scales-52",
+            "gender": "Female",
+            "deadType": "Predator",
+            "age": 0,
+            "eatenObjectCount": 3,
+            "childCount": 0,
+            "motherName": "User",
+            "fatherName": "User"
+        },
+        {
+            "type": "Carnivore",
+            "name": "Scales-94",
+            "gender": "Male",
+            "deadType": "HungerORThirst",
+            "age": 1,
+            "eatenObjectCount": 0,
+            "childCount": 0,
+            "motherName": "User",
+            "fatherName": "User"
+        },
+        {
+            "type": "Carnivore",
+            "name": "Whisper-24",
+            "gender": "Female",
+            "deadType": "HungerORThirst",
+            "age": 1,
+            "eatenObjectCount": 0,
+            "childCount": 0,
+            "motherName": "User",
+            "fatherName": "User"
+        },
+        {
+            "type": "Carnivore",
+            "name": "Whisper-76",
+            "gender": "Male",
+            "deadType": "Alive",
+            "age": 2,
+            "eatenObjectCount": 3,
+            "childCount": 3,
+            "motherName": "User",
+            "fatherName": "User"
+        },
+        {
+            "type": "Carnivore",
+            "name": "Scales-32",
+            "gender": "Female",
+            "deadType": "HungerORThirst",
+            "age": 1,
+            "eatenObjectCount": 0,
+            "childCount": 0,
+            "motherName": "User",
+            "fatherName": "User"
+        },
+        {
+            "type": "Herbivore",
+            "name": "Ivory-37",
+            "gender": "Female",
+            "deadType": "Predator",
+            "age": 0,
+            "eatenObjectCount": 2,
+            "childCount": 0,
+            "motherName": "Whisper-69",
+            "fatherName": "Bubbles-52"
+        },
+        {
+            "type": "Herbivore",
+            "name": "Blaze-73",
+            "gender": "Female",
+            "deadType": "Alive",
+            "age": 1,
+            "eatenObjectCount": 3,
+            "childCount": 1,
+            "motherName": "Blaze-79",
+            "fatherName": "Whisper-76"
+        },
+        {
+            "type": "Herbivore",
+            "name": "Zippy-44",
+            "gender": "Female",
+            "deadType": "Alive",
+            "age": 1,
+            "eatenObjectCount": 2,
+            "childCount": 0,
+            "motherName": "Whisper-69",
+            "fatherName": "Ivory-37"
+        },
+        {
+            "type": "Herbivore",
+            "name": "Ash-44",
+            "gender": "Male",
+            "deadType": "Alive",
+            "age": 0,
+            "eatenObjectCount": 2,
+            "childCount": 0,
+            "motherName": "Whisper-69",
+            "fatherName": "Ivory-37"
+        },
+        {
+            "type": "Herbivore",
+            "name": "Ember-47",
+            "gender": "Male",
+            "deadType": "Predator",
+            "age": 0,
+            "eatenObjectCount": 0,
+            "childCount": 0,
+            "motherName": "Whisper-69",
+            "fatherName": "Ivory-37"
+        },
+        {
+            "type": "Herbivore",
+            "name": "Pongo-64",
+            "gender": "Male",
+            "deadType": "Predator",
+            "age": 0,
+            "eatenObjectCount": 0,
+            "childCount": 0,
+            "motherName": "Zippy-23",
+            "fatherName": "Blaze-73"
+        },
+        {
+            "type": "Herbivore",
+            "name": "Ash-57",
+            "gender": "Male",
+            "deadType": "Predator",
+            "age": 0,
+            "eatenObjectCount": 0,
+            "childCount": 0,
+            "motherName": "Whisper-69",
+            "fatherName": "Ash-44"
+        },
+        {
+            "type": "Herbivore",
+            "name": "Pongo-22",
+            "gender": "Male",
+            "deadType": "Predator",
+            "age": 0,
+            "eatenObjectCount": 0,
+            "childCount": 0,
+            "motherName": "Whisper-69",
+            "fatherName": "Ash-44"
+        },
+        {
+            "type": "Herbivore",
+            "name": "Whisper-86",
+            "gender": "Female",
+            "deadType": "Predator",
+            "age": 0,
+            "eatenObjectCount": 0,
+            "childCount": 0,
+            "motherName": "Blaze-73",
+            "fatherName": "Ash-44"
+        }
+    ]
+}

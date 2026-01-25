@@ -16,11 +16,11 @@ public class MateState : IAnimalState
 
         //Vision
         mate = animal.GetClosestMate();
-        if (mate != null)
-            return;
-
-        //Memory
-        mate = animal.GetMemoryEntity(MemoryType.Mate);
+        if (mate == null)
+        {
+            //Memory
+            mate = animal.GetMemoryEntity(MemoryType.Mate);
+        }
     }
 
     public void Exit()
@@ -32,6 +32,9 @@ public class MateState : IAnimalState
 
     public void Tick()
     {
+        if (mate != null && !animal.CanMate(mate))
+            mate = null;
+
         if (mate == null || !mate.gameObject.activeInHierarchy)
         {
             animal.hasMate = false;
@@ -42,7 +45,7 @@ public class MateState : IAnimalState
         float distance = Vector3.Distance(animal.transform.position, mate.transform.position);
         if(distance <= animal.matingDistance)
         {
-            animal.Breed();
+            animal.Breed(mate);
             animal.searchIntent.Clear();
             animal.ChangeState(new WanderState(animal));
             return;

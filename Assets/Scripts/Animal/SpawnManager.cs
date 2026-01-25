@@ -31,10 +31,11 @@ public class SpawnManager : MonoBehaviour
     {
         Tile tile = tiles[Random.Range(0, tiles.Count)];
         tiles.Remove(tile);
-        return SpawnAnimal(type, tile.transform.position, gender);
+        ParentData data = new ParentData("User","User");
+        return SpawnAnimal(type, tile.transform.position, data, gender);
     }
 
-    public Animal SpawnAnimal(SpeciesType type, Vector3 spawnPos, Gender gen = Gender.Unknown)
+    public Animal SpawnAnimal(SpeciesType type, Vector3 spawnPos, ParentData data, Gender gen = Gender.Unknown)
     {
         //Setting up the gender and prefab for the animal
         Gender gender = GetGenderForAnimal(gen);
@@ -43,7 +44,7 @@ public class SpawnManager : MonoBehaviour
         //Spawning the animal
         Vector3 pos = spawnPos + new Vector3(0, 0.5f, 0);
         Animal a = Instantiate(prefab, pos, Quaternion.identity, transform).GetComponent<Animal>();
-        a.Initialize(GetNameForAnimal(), gender, type);
+        a.Initialize(GetNameForAnimal(), gender, type, data);
 
         return a;
     }
