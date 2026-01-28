@@ -1,0 +1,25 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Scripts/UILayout/MainMenu/OptionsMenu.uss?fileID=7433441132597879392&amp;guid=b45a763a9f41acd43a680fd2bdbbdf5e&amp;type=3#OptionsMenu"/>
+    <ui:VisualElement class="background"/>
+    
+    <ui:VisualElement class="root">
+        
+        <!--Tab bar-->
+        <ui:VisualElement name="tabBar" class="tab-bar">
+            <ui:Button name="mapTab" text="Map"/>
+            <ui:Button name="inputTab" text="Input"/>
+            <ui:Button name="herbTab" text="Herbivore"/>
+            <ui:Button name="carnTab" text="Carnivore"/>
+        </ui:VisualElement>
+        
+        <!--Content-->
+        <ui:VisualElement name="content" class="content"/>
+        
+        <!--Footer-->
+        <ui:VisualElement name="footer" class="footer">
+            <ui:Button name="startSimulationButton" text="Main Menu"/>
+            <ui:Label name="validationTooltip" class="tooltip"/>
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+</ui:UXML>

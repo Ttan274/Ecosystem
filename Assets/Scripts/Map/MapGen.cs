@@ -14,7 +14,7 @@ public class MapGen : MonoBehaviour
     [SerializeField] private PlantableObject bush;
 
     //References
-    private MapSettings settings;
+    [SerializeField] private SimulationConfig config;
 
     //Internal Map Data
     private Tile[,] tiles;
@@ -34,33 +34,31 @@ public class MapGen : MonoBehaviour
 
     private void Start()
     {
+        if(config != null)
+            ApplySettings();
+
         tiles = new Tile[width, height];
         lakeMap = new bool[width, height];
         Generate();
     }
 
-    private void Initialize(MapSettings s)
-    {
-        settings = s;
-        ApplySettings();
-    }
-
     private void ApplySettings()
     {
+        Debug.Log("Map Settings has been updated");
+
         //Map
-        width = settings.width;
-        height = settings.height;
-        lakeCount = settings.lakeCount;
-        lakeRadius = settings.lakeRadius;
-        irregularity = settings.irregularity;
+        width = config.mapSettings.width;
+        height = config.mapSettings.height;
+        lakeCount = config.mapSettings.lakeCount;
+        lakeRadius = config.mapSettings.lakeRadius;
+        irregularity = config.mapSettings.irregularity;
 
         //Plantables
-        tree.maxCount = settings.tree.maxCount;
-        tree.spawnChance = settings.tree.spawnChance;
-        bush.maxCount = settings.bush.maxCount;
-        bush.spawnChance = settings.bush.spawnChance;
+        tree.maxCount = config.mapSettings.tree.maxCount;
+        tree.spawnChance = config.mapSettings.tree.spawnChance;
+        bush.maxCount = config.mapSettings.bush.maxCount;
+        bush.spawnChance = config.mapSettings.bush.spawnChance;
     }
-
 
     #region MapGeneration Methods
     private void Generate()
@@ -205,6 +203,7 @@ public class MapGen : MonoBehaviour
     public void CreateBush()
     {
         List<Tile> groundTiles = ShuffleGroundTiles();
+        Debug.Log("Plant spawned at : " + groundTiles[0].transform.position);
         groundTiles[0].PlacePlant(bush.prefab);
     }
     #endregion

@@ -1,0 +1,54 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="project://database/Assets/Scripts/UILayout/MainMenu/OptionsMenu.uss?fileID=7433441132597879392&amp;guid=b45a763a9f41acd43a680fd2bdbbdf5e&amp;type=3#OptionsMenu"/>
+    <ui:ScrollView class="scroll">
+        <ui:VisualElement class="section">
+            <ui:Label text="Presets" class="section-title"/>
+            <ui:DropdownField name="presetDropdown"/>
+        </ui:VisualElement>
+    
+        <ui:VisualElement class="section">
+            <ui:Label text="Map Size" class="section-title"/>
+            <ui:VisualElement class="row">
+                <ui:IntegerField label="Width" name="widthField"/>
+                <ui:IntegerField label="Height" name="heightField"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        
+        <ui:VisualElement class="section">
+            <ui:Label text="Lakes" class="section-title"/>
+            <ui:IntegerField label="Lake Count" name="lakeCount"/>
+            <ui:IntegerField label="Lake Radius" name="lakeRadius"/>
+            <ui:VisualElement class="slider-block">
+                <ui:Label text="Irregularity" class="field-label"/>
+                <ui:VisualElement class="slider-row">
+                    <ui:Slider name="irregularity" low-value="0" high-value="1"/>
+                    <ui:Label name="irregularityValue" class="slider-value"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        
+        <ui:VisualElement class="section">
+            <ui:Label text="Trees" class="section-title"/>
+            <ui:IntegerField label="Max Count" name="treeMax"/>
+            <ui:VisualElement class="slider-block">
+                <ui:Label text="SpawnChance" class="field-label"/>
+                <ui:VisualElement class="slider-row">
+                    <ui:Slider name="treeChance" low-value="0" high-value="1"/>
+                    <ui:Label name="treeChanceValue" class="slider-value"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        
+        <ui:VisualElement class="section">
+            <ui:Label text="Bushes" class="section-title"/>
+            <ui:IntegerField label="Max Count" name="bushMax"/>
+            <ui:VisualElement class="slider-block">
+                <ui:Label text="SpawnChance" class="field-label"/>
+                <ui:VisualElement class="slider-row">
+                    <ui:Slider name="bushChance" low-value="0" high-value="1"/>
+                    <ui:Label name="bushChanceValue" class="slider-value"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:ScrollView>
+</ui:UXML>
