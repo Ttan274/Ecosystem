@@ -203,7 +203,6 @@ public class MapGen : MonoBehaviour
     public void CreateBush()
     {
         List<Tile> groundTiles = ShuffleGroundTiles();
-        Debug.Log("Plant spawned at : " + groundTiles[0].transform.position);
         groundTiles[0].PlacePlant(bush.prefab);
     }
     #endregion

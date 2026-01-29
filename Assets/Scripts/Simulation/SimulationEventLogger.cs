@@ -1,17 +1,18 @@
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class SimulationEventLogger : MonoBehaviour
 {
-    [Header("UI References")]
-    [SerializeField] private Transform eventLogContainer;
-    [SerializeField] private GameObject eventItemPrefab;
+    [Header("Logger Data")]
     [SerializeField] private int maxLogItems = 5;
+    private VisualElement root;
+    private bool isCollapsed;
 
-    private readonly Queue<GameObject> logItems = new Queue<GameObject>();
+    private readonly Queue<VisualElement> logItems = new();
 
-    #region
+    #region Enable/Disable
+
     private void OnEnable()
     {
         WorldEvents.OnAnimalBorn += SEL_OnAnimalBorn;
@@ -28,13 +29,39 @@ public class SimulationEventLogger : MonoBehaviour
 
     #endregion
 
+    private void Awake()
+    {
+        root = GetComponent<UIDocument>().rootVisualElement;
+
+        //Callback
+        root.Q<Button>("logCollapse").clicked += ToggleLogPanel;
+    }
+
+    private void ToggleLogPanel()
+    {
+        isCollapsed = !isCollapsed;
+
+        if (isCollapsed)
+        {
+            root.Q<VisualElement>("logPanel").AddToClassList("collapsed");
+            root.Q<Button>("logCollapse").text = "+";
+        }
+        else
+        {
+            root.Q<VisualElement>("logPanel").RemoveFromClassList("collapsed");
+            root.Q<Button>("logCollapse").text = "-";
+        }
+    }
+
+    #region Logs
+
     private void SEL_OnAnimalBorn(Animal animal)
     {
         //Debug.Log(
         //    $"[EVENT] Birth | {animal.Species} | Name : {animal.animalName} | Gender : {animal.gender}"
         //);
 
-        AddLog($"[EVENT] Birth | {animal.Species} | Name : {animal.animalName} | Gender : {animal.gender}", Color.green);
+        AddLog($"[EVENT] Birth | {animal.Species} | Name : {animal.animalName} | Gender : {animal.gender}", "log-birth");
     }
 
     private void SEL_OnAnimalDied(Animal animal, DeathType deathType)
@@ -43,7 +70,7 @@ public class SimulationEventLogger : MonoBehaviour
         //   $"[EVENT] Death | {animal.Species} | Name : {animal.animalName} | Death Reason : {deathType.ToString()} "
         //);
 
-        AddLog($"[EVENT] Death | {animal.Species} | Name : {animal.animalName} | Death Reason : {deathType.ToString()}", Color.red);
+        AddLog($"[EVENT] Death | {animal.Species} | Name : {animal.animalName} | Death Reason : {deathType.ToString()}", "log-death");
     }
 
     private void SEL_OnDayChanged(int day)
@@ -52,21 +79,28 @@ public class SimulationEventLogger : MonoBehaviour
         //    $"[EVENT] Day Changed | Day {day}"
         //);
 
-        AddLog($"[EVENT] Day Changed | Day {day}", Color.black);
+        AddLog($"[EVENT] Day Changed | Day {day}", "log-day");
     }
 
-
-    private void AddLog(string message, Color color)
+    private void AddLog(string message, string cssClass)
     {
-        GameObject logItem = Instantiate(eventItemPrefab, eventLogContainer);
-        TextMeshProUGUI logText = logItem.GetComponentInChildren<TextMeshProUGUI>();
+        //Label Setup
+        var label = new Label(message);
+        label.AddToClassList("log-entry");
+        label.AddToClassList(cssClass);
 
-        logText.text = message;
-        logText.color = color;
+        //Adding to the scroll & queue
+        root.Q<ScrollView>("logScroll").Add(label);
+        logItems.Enqueue(label);
 
-        //Queue management
-        logItems.Enqueue(logItem);
         if(logItems.Count > maxLogItems)
-            Destroy(logItems.Dequeue());
+        {
+            var old = logItems.Dequeue();
+            old.RemoveFromHierarchy();
+        }
+
+        root.Q<ScrollView>("logScroll").ScrollTo(label);
     }
+
+    #endregion
 }

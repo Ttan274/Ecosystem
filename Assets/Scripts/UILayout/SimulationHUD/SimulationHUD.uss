@@ -1,0 +1,226 @@
+/* ROOT */
+.hud-root {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+
+    flex-direction: row;
+    pointer-events: none; /* WORLD input bozulmasýn */
+}
+
+/* LEFT PANEL */
+.left-panel {
+    width: 260px;
+    padding: 8px;
+
+    background-color: rgba(30, 30, 30, 0.85);
+    flex-direction: column;
+
+    pointer-events: auto;
+    transition: width 0.25s ease-in-out;
+}
+
+.left-panel.collapsed{
+    width: 42px !important;
+}
+
+.left-panel.collapsed .left-content {
+    display: none;
+}
+
+.hud-toggle{
+     height: 28px;
+    margin-bottom: 6px;
+
+    font-size: 16px;
+    text-align: center;
+}
+
+Label{
+    min-height: 18px;
+    font-size: 12px;
+}
+
+IntegerField .unity-text-input {
+    color: #ffffff;
+}
+
+/* STATUS */
+.status-panel {
+    padding: 8px;
+    margin-bottom: 8px;
+
+    background-color: #3a7f2f;
+    border-radius: 6px;
+}
+
+.status-panel Label {
+    font-size: 12px;
+    color: white;
+    margin-bottom: 4px;
+}
+
+/* CONTROL PANEL*/
+.control-panel {
+    flex-grow: 0;
+    background-color: rgba(50, 50, 50, 0.6);
+    border-radius: 6px;
+}
+
+
+/*Game Speed Panel*/
+    .section-title {
+    font-size: 13px;
+    margin-bottom: 6px;
+    color: #dddddd;
+}
+
+.speed-row {
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+    flex-grow: 0;
+}
+
+.speed-row Button {
+    width: 32px;
+    height: 28px;
+}
+
+.speed-row Label {
+    min-width: 40px;
+    text-align: center;
+    color: white;
+}
+
+.control-panel Button {
+    height: 32px;
+    margin-bottom: 6px;
+}
+
+
+/* SPAWN PANEL */
+.spawn-panel {
+    margin-top: 12px;
+    padding: 8px;
+
+    background-color: rgba(40, 40, 40, 0.7);
+    border-radius: 6px;
+}
+
+.spawn-panel Button {
+    height: 32px;
+    margin-bottom: 6px;
+    font-size: 12px;
+}
+
+ .spawn-panel IntegerField {
+    margin-bottom: 6px;
+}
+
+.spawn-panel .unity-base-field__label {
+    min-width: 50px;
+    font-size: 11px;
+}
+
+ /* DISASTER PANEL */
+.disaster-panel {
+    margin-top: 12px;
+    padding: 8px;
+
+    background-color: rgba(55, 35, 35, 0.75);
+    border-radius: 6px;
+}
+
+/* Sub titles */
+.sub-title {
+    font-size: 12px;
+    margin-bottom: 6px;
+    color: #ffcccc;
+}
+
+/* Disease buttons */
+.disease-block Button {
+    height: 30px;
+    margin-bottom: 6px;
+    font-size: 12px;
+}
+
+/* Drought */
+.drought-block {
+    padding-top: 6px;
+    border-top-width: 1px;
+    border-top-color: rgba(255,255,255,0.1);
+}
+
+.drought-block Toggle {
+    color: #ffd9a0;
+}
+
+/* LOG PANEL */
+.log-panel {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+
+    width: 420px;
+    height: 260px;
+
+    background-color: rgba(20, 20, 20, 0.85);
+    border-radius: 6px;
+    padding: 8px;
+
+    pointer-events: auto;
+    flex-direction: column;
+    transition: height 0.25s ease-in-out;
+}
+
+.log-panel.collapsed{
+    height:36px;
+}
+
+.log-header {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.log-title {
+    flex-grow: 1;
+    font-size: 13px;
+    color: #dddddd;
+}
+
+.log-collapse {
+    width: 28px;
+    height: 22px;
+    font-size: 14px;
+}
+
+.log-panel.collapsed .log-scroll {
+    display: none;
+}
+
+.log-scroll{
+    flex-grow: 1;
+}
+
+.log-entry {
+    font-size: 11px;
+    margin-bottom: 4px;
+}
+
+.log-birth {
+    color: #7cff7c;
+}
+
+.log-death {
+    color: #ff6b6b;
+}
+
+.log-day {
+    color: #6fbaff;
+}

@@ -4,7 +4,6 @@ using UnityEngine;
 public class DayCycle : MonoBehaviour
 {
     [Header("Day Cycle Data")]
-    [SerializeField] private TextMeshProUGUI dayData;
     [SerializeField] private Light directionalLight;
     [SerializeField] private Gradient lightColor;
     [SerializeField] private AnimationCurve lightIntensity;
@@ -12,6 +11,19 @@ public class DayCycle : MonoBehaviour
    
     private float dayTimer = 0f;
     private int dayCount = 0;
+
+    public static DayCycle Instance;
+
+    private void Awake()
+    {
+        if(Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+    }
 
     private void Update()
     {
@@ -23,17 +35,16 @@ public class DayCycle : MonoBehaviour
             WorldEvents.RaiseDayChanged(dayCount);
         }
         UpdateLight();
-        UpdateDayInfo();
     }
 
-    private void UpdateDayInfo()
+    public string UpdateDayInfo()
     {
         int totalMinutes = Mathf.FloorToInt(dayTimer * 24f * 60f);
         int hours = totalMinutes / 60;
         int minutes = totalMinutes % 60;
         
         string clock = $"{hours:00}:{minutes:00}";
-        dayData.text = $"Day {dayCount} - {clock}"; 
+        return $"Day {dayCount} - {clock}"; 
     }
 
     private void UpdateLight()

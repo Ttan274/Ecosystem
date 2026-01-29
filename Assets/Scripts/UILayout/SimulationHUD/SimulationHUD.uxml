@@ -1,0 +1,86 @@
+﻿<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Scripts/UILayout/SimulationHUD/SimulationHUD.uss?fileID=7433441132597879392&amp;guid=7ab8f0feeb7c7f54681d9e598eef2fc5&amp;type=3#SimulationHUD"/>
+    <ui:VisualElement class="hud-root">
+        
+        <!--Left Panel-->
+        <ui:VisualElement  name="leftPanel" class="left-panel">
+
+            <!--Toogle For Open/Close Left Panel-->
+            <ui:Button name="toggleHUD" text="☰" class="hud-toggle"/>
+
+            <ui:VisualElement name="leftContent" class="left-content">
+
+                <!--Status Panel-->
+                <ui:VisualElement class="status-panel">
+                
+                    <!--CamMode-->
+                    <ui:Label name="cameraModeLabel" text="Camera Mode : Orbit"/>
+                
+                    <!--Day/Time-->
+                    <ui:Label name="timeLabel" text="Day 0 - 00:00"/>
+                </ui:VisualElement>
+
+                <!--Control Panel-->
+                <ui:VisualElement class="control-panel">
+                
+                    <!--Game Speed-->
+                    <ui:Label text="Game Speed" class="section-title"/>
+                
+                    <ui:VisualElement class="speed-row">
+                        <ui:Label name="speedLabel" text="Game Speed : 1x"/>
+                        <ui:Button name="speedDownButton" text="-" />
+                        <ui:Button name="speedUpButton" text="+" />
+                    </ui:VisualElement>
+
+                    <ui:Button name="pauseButton" text="Pause"/>
+                </ui:VisualElement>
+
+                <!--Spawn Panel-->
+                <ui:VisualElement class="spawn-panel">
+
+                    <ui:Label text="Spawn Animals" class="section-title"/>
+
+                    <!--Spawn Count-->
+                    <ui:IntegerField name="spawnCountField" label="Count" value="1"/>
+
+                    <ui:Button name="spawnHerbivoreButton" text="+ Herbivore"/>
+                    <ui:Button name="spawnCarnivoreButton" text="+ Carnivore"/>
+                </ui:VisualElement>
+
+                <!--Disaster Panel-->
+                <ui:VisualElement class="disaster-panel">
+
+                    <ui:Label text="Disasters" class="section-title"/>
+
+                    <!-- Diseases -->
+                    <ui:VisualElement class="disease-block">
+                        <ui:Label text="Disease" class="sub-title"/>
+
+                        <ui:Button name="diseaseHerbivore" text="Herbivore"/>
+                        <ui:Button name="diseaseCarnivore" text="Carnivore"/>
+                    </ui:VisualElement>
+
+                    <!-- Drought -->
+                    <ui:VisualElement class="drought-block">
+                        <ui:Toggle name="droughtToggle" label="Drought"/>
+                    </ui:VisualElement>
+
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        
+        
+        <!--Log Panel-->
+        <ui:VisualElement name="logPanel" class="log-panel">
+
+            <!--Log Header-->
+            <ui:VisualElement class="log-header">
+                <ui:Label text="Log Panel" class="log-title"/>
+                <ui:Button text="-" name="logCollapse" class="log-collapse"/>
+            </ui:VisualElement>
+            
+            <!--Log Content-->
+            <ui:ScrollView name="logScroll" class="log-scroll"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

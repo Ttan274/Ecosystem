@@ -12,7 +12,7 @@ public class CameraController : MonoBehaviour
     }
 
     [Header("Main")]
-    [SerializeField] private CameraMode mode;
+    public CameraMode mode;
     [SerializeField] private KeyCode switchKey;
 
     [Header("Orbit")]
@@ -31,7 +31,20 @@ public class CameraController : MonoBehaviour
     private float totalMultiplied = 1f;
     private Transform focusPoint;
     private bool camActive = false;
-    public static UnityAction<string> OnCamModeChange;
+
+    //Instance
+    public static CameraController Instance;
+
+    private void Awake()
+    {
+        if(Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+    }
 
     private void Update()
     {
@@ -100,12 +113,10 @@ public class CameraController : MonoBehaviour
             {
                 case CameraMode.Orbit:
                     mode = CameraMode.Fly;
-                    OnCamModeChange?.Invoke(mode.ToString());
                     CursorBehaviour(true);
                     break;
                 case CameraMode.Fly:
                     mode = CameraMode.Orbit;
-                    OnCamModeChange?.Invoke(mode.ToString());
                     CursorBehaviour(true);
                     break;
                 default:
