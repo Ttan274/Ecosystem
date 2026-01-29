@@ -133,7 +133,6 @@ public class Simulation : MonoBehaviour
         //Write Files
         File.WriteAllText(pathSimData, jsonSimData);
         File.WriteAllText(pathSimAnimalData, jsonSimAnimalData);
-        //Debug.Log($"Simulation data exported to {path}");
     }
     #endregion
 }

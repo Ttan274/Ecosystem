@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Scripts/UILayout/PauseMenu/PauseMenu.uss?fileID=7433441132597879392&amp;guid=67db96b058ab1c143b2c43f493d86051&amp;type=3#PauseMenu"/>
+    <ui:VisualElement class="pause-overlay">
+        
+    <ui:VisualElement class="pause-panel">
+            
+            <ui:Label text="Paused" class="pause-title"/>
+            
+            <ui:Button name="continueButton" text="Continue"/>
+            <ui:Button name="exportButton" text="Export"/>
+            <ui:Button name="mainMenuButton" text="Main Menu"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

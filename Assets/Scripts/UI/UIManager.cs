@@ -2,59 +2,78 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    [Header("UI Panels")]
-    [SerializeField] private GameObject inGamePanel;
-    [SerializeField] private AdminPanel adminPanel;
-    [SerializeField] private GameObject pauseMenu;
+    [Header("Canvas Panels")]
+    [SerializeField] private GameObject adminPanel;
     
-    //Others
-    private CanvasGroup adminPanelCanvas;
+    [Header("UI Toolkit Panels")]
+    [SerializeField] private PauseMenuController pauseMenu;
+    [SerializeField] private SimulationHUDController hudController;
+
+    //bool flags
     private bool isAdminPanelActive = false;
-    private bool isPauseMenuActive = false;
-    private float timeS;
+    private bool isPauseActive = false;
+
+    //References
     private CameraController cam;
 
     private void Awake()
     {
-        adminPanelCanvas = adminPanel.GetComponent<CanvasGroup>();
         cam = Camera.main.GetComponent<CameraController>();
+        pauseMenu.OnContinue += Continue;
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.M) && !isPauseMenuActive)
-            AdminPanelStatus();
+        if (Input.GetKeyDown(KeyCode.M) && !isPauseActive)
+            ToggleAdminPanel();
 
-        if(Input.GetKeyDown(KeyCode.P) && !isAdminPanelActive)
-            PausePanelStatus();
+        if(Input.GetKeyDown(KeyCode.P))
+            TogglePause();
     }
 
-    private void AdminPanelStatus()
+    private void ToggleAdminPanel()
     {
         isAdminPanelActive = !isAdminPanelActive;
-        inGamePanel.SetActive(!isAdminPanelActive);
-        adminPanelCanvas.alpha = isAdminPanelActive ? 1 : 0;
-    }
+        adminPanel.SetActive(isAdminPanelActive);
 
-    public void PausePanelStatus()
-    {
-        isPauseMenuActive = !isPauseMenuActive;
-        inGamePanel.SetActive(!isPauseMenuActive);
-        pauseMenu.SetActive(isPauseMenuActive);
-        cam.ChangeCamActiveness(!isPauseMenuActive);
-        ChangeGameSpeed(isPauseMenuActive);
-    }
-
-    private void ChangeGameSpeed(bool isStopped)
-    {
-        if (isStopped)
+        if(isAdminPanelActive)
         {
-            timeS = Time.timeScale;
-            Time.timeScale = 0f;
+            cam.ChangeCamActiveness(false);
+            hudController.Hide();
         }
         else
         {
-            Time.timeScale = timeS;
+            cam.ChangeCamActiveness(true);
+            hudController.Show();
         }
+    }
+
+    private void TogglePause()
+    {
+        isPauseActive = !isPauseActive;
+
+        if(isPauseActive)
+        {
+            pauseMenu.Show();
+            hudController.Hide();
+            adminPanel.SetActive(false);
+            isAdminPanelActive = false;
+            cam.ChangeCamActiveness(false);
+        }
+        else
+        {
+            Continue();
+        }
+    }
+
+    private void Continue()
+    {
+        isPauseActive = false;
+
+        pauseMenu.Hide();
+        hudController.Show();
+        
+        cam.ChangeCamActiveness(true);
+        Time.timeScale = 1f;
     }
 }

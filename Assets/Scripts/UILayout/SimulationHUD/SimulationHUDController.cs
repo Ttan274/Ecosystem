@@ -149,6 +149,13 @@ public class SimulationHUDController : MonoBehaviour
         }
     }
     #endregion
+
+    #region Show/Hide
+
+    public void Show() => root.style.display = DisplayStyle.Flex;
+    public void Hide() => root.style.display = DisplayStyle.None;
+
+    #endregion
 }
 
 [System.Serializable]
